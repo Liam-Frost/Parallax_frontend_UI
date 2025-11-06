@@ -3,25 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Apple 风格登录与车牌注册</title>
+    <title>Parallax</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="apple-header">
       <nav class="apple-nav" aria-label="主导航">
-        <a class="nav-logo" href="#" aria-label="Apple"></a>
+        <a class="nav-logo" href="#" aria-label="Parallax"></a>
         <ul class="nav-links">
-          <li><a href="#">Store</a></li>
-          <li><a href="#">Mac</a></li>
-          <li><a href="#">iPad</a></li>
-          <li><a href="#">iPhone</a></li>
-          <li><a href="#">Watch</a></li>
-          <li><a href="#">Vision</a></li>
-          <li><a href="#">AirPods</a></li>
-          <li><a href="#">TV &amp; Home</a></li>
-          <li><a href="#">Entertainment</a></li>
-          <li><a href="#">Accessories</a></li>
-          <li><a href="#">Support</a></li>
+          <li><a href="#">Vehicle Management</a></li>
+          <li><a href="#">Plate Management</a></li>
         </ul>
         <div class="nav-actions" aria-hidden="true">
           <span class="nav-icon">🔍</span>
@@ -32,9 +23,9 @@
 
     <main>
       <section id="auth-shell" class="signin-shell">
-        <h1 class="signin-heading">Sign in for faster checkout.</h1>
+        <h1 class="signin-heading">Sign in</h1>
         <section class="signin-card" aria-labelledby="form-title">
-          <h2 id="form-title" class="card-title">Sign in to Apple Store</h2>
+          <h2 id="form-title" class="card-title">Sign in to Parallax</h2>
           <p id="form-subtitle" class="card-subtitle">
             Enter your email or phone number to continue.
           </p>
@@ -105,7 +96,7 @@
         <div class="support-box">
           <p>
             Need more help?
-            <a href="#" class="link">Chat now</a> or call 1-800-MY-APPLE.
+            <a href="#" class="link">Chat now</a> or call 1-800-888-8888.
           </p>
         </div>
       </section>
@@ -121,9 +112,9 @@
             <input
               type="text"
               id="license-number"
-              placeholder="例：京A12345"
+              placeholder="例：EVO32S"
               pattern="^[\u4e00-\u9fa5][A-Z][A-Z0-9]{5}$"
-              title="请输入类似“京A12345”的车牌号码"
+              title="请输入类似“EVO32S”的车牌号码"
               required
             />
           </label>
