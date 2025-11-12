@@ -61,10 +61,13 @@ a.link:focus {
   height: 100%;
 }
 
-.nav-logo img {
+.nav-logo .logo-mark {
+  width: 18px;
   height: 18px;
-  width: auto;
-  display: block;
+  border-radius: 50%;
+  background: radial-gradient(circle at 25% 25%, #fff 0%, #d2d2d7 55%, #a1a1a6 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
 }
 
 .nav-links {
@@ -111,6 +114,12 @@ main {
   margin: 0;
 }
 
+.signin-subheading {
+  margin: 0;
+  font-size: 17px;
+  color: rgba(29, 29, 31, 0.7);
+}
+
 .signin-card {
   background: #fff;
   border-radius: 22px;
@@ -123,6 +132,44 @@ main {
   flex-direction: column;
   align-items: stretch;
   gap: 24px;
+}
+
+.signin-card .account-logo {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 180deg,
+    #ff3b30,
+    #ff9500,
+    #ffcc00,
+    #34c759,
+    #5ac8fa,
+    #007aff,
+    #5856d6,
+    #ff2d55,
+    #ff3b30
+  );
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signin-card .account-logo::after {
+  content: "";
+  width: 42px;
+  height: 42px;
+  border-radius: 16px 16px 20px 20px;
+  background: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.08);
+}
+
+.signin-card.register-mode .account-logo,
+.signin-card.reset-mode .account-logo {
+  display: none;
 }
 
 .signin-card.register-mode {
@@ -173,6 +220,55 @@ main {
   display: none;
   flex-direction: column;
   gap: 18px;
+}
+
+#login-form {
+  position: relative;
+}
+
+#login-form .identifier-field {
+  order: 1;
+}
+
+#login-form .password-field {
+  order: 2;
+}
+
+#login-form .remember-row {
+  order: 3;
+}
+
+#login-form .primary-button {
+  order: 4;
+}
+
+#login-form .link-group {
+  order: 5;
+}
+
+#login-form .stage-note {
+  order: 6;
+}
+
+#login-form .stage-note {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(29, 29, 31, 0.6);
+  line-height: 1.45;
+}
+
+#login-form[data-stage="identifier"] .password-field,
+#login-form[data-stage="identifier"] .password-stage {
+  display: none;
+}
+
+#login-form[data-stage="password"] .stage-note {
+  display: none;
+}
+
+#login-form[data-stage="password"] .primary-button {
+  background: linear-gradient(180deg, #0071e3, #005bb5);
+  box-shadow: 0 8px 16px rgba(0, 113, 227, 0.24);
 }
 
 .auth-form.active {
@@ -426,12 +522,12 @@ main {
 
 .input-field {
   position: relative;
-  display: flex;
-  align-items: center;
+  display: block;
   background: rgba(245, 245, 247, 0.9);
   border-radius: 12px;
-  padding: 0 16px;
+  padding: 22px 18px 10px;
   border: 1px solid rgba(210, 210, 215, 0.6);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .input-field:focus-within {
@@ -441,17 +537,37 @@ main {
 }
 
 .input-field input {
-  flex: 1;
+  width: 100%;
   border: none;
   background: transparent;
-  padding: 14px 8px;
+  padding: 0;
   font-size: 16px;
   outline: none;
+  color: #1d1d1f;
 }
 
-.field-icon {
+.input-field input::placeholder {
+  color: transparent;
+}
+
+.floating-field .floating-label {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 16px;
-  color: rgba(29, 29, 31, 0.6);
+  color: rgba(60, 60, 67, 0.65);
+  pointer-events: none;
+  transition: transform 0.2s ease, top 0.2s ease, font-size 0.2s ease,
+    color 0.2s ease;
+}
+
+.floating-field input:focus + .floating-label,
+.floating-field input:not(:placeholder-shown) + .floating-label {
+  top: 10px;
+  transform: translateY(0);
+  font-size: 12px;
+  color: rgba(29, 29, 31, 0.7);
 }
 
 .remember-row {

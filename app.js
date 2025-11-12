@@ -5,12 +5,17 @@ const STORAGE_KEYS = {
 };
 
 const loginForm = document.getElementById("login-form");
+const loginIdentifierInput = document.getElementById("login-username");
+const loginPasswordInput = document.getElementById("login-password");
+const loginPrimaryButton = loginForm?.querySelector(".primary-button");
 const registerForm = document.getElementById("register-form");
 const resetForm = document.getElementById("reset-form");
 const authMessage = document.getElementById("auth-message");
 const formTitle = document.getElementById("form-title");
 const formSubtitle = document.getElementById("form-subtitle");
-const createAccountLink = document.getElementById("create-account-link");
+const createAccountLinks = document.querySelectorAll(
+  ".create-account-trigger"
+);
 const backToLoginLink = document.getElementById("back-to-login");
 const forgotPasswordLink = document.getElementById("forgot-password");
 const resetBackLink = document.getElementById("reset-back-link");
@@ -38,6 +43,7 @@ const resetAssistiveCaptchaButton = document.getElementById(
 );
 
 let currentUser = null;
+let loginStage = "identifier";
 const captchaState = {
   register: "469P",
   reset: "469P",
@@ -270,12 +276,43 @@ function setupCaptchaControls() {
   });
 }
 
+function setLoginStage(stage) {
+  loginStage = stage;
+  if (loginForm) {
+    loginForm.dataset.stage = stage;
+  }
+
+  if (loginPrimaryButton) {
+    loginPrimaryButton.textContent =
+      stage === "identifier" ? "Continue" : "Sign in";
+  }
+
+  if (formSubtitle) {
+    formSubtitle.textContent =
+      stage === "identifier"
+        ? "Enter your email or phone number to continue."
+        : "Enter your password to continue.";
+  }
+
+  if (stage === "identifier") {
+    if (loginPasswordInput) {
+      loginPasswordInput.value = "";
+    }
+    loginIdentifierInput?.focus();
+  } else {
+    loginPasswordInput?.focus();
+  }
+}
+
 function showLoginView() {
   if (signinCard) {
     signinCard.classList.remove("register-mode", "reset-mode");
   }
   formTitle.textContent = "Sign in to Parallax";
-  formSubtitle.textContent = "Enter your email or phone number to continue.";
+  if (loginForm) {
+    loginForm.reset();
+  }
+  setLoginStage("identifier");
   loginForm.classList.add("active");
   registerForm.classList.remove("active");
   resetForm?.classList.remove("active");
@@ -491,8 +528,32 @@ function handleReset(event) {
 
 function handleLogin(event) {
   event.preventDefault();
-  const identifier = document.getElementById("login-username")?.value.trim();
-  const password = document.getElementById("login-password")?.value.trim();
+  const identifier = loginIdentifierInput?.value.trim();
+
+  if (loginStage === "identifier") {
+    if (!identifier) {
+      showMessage(authMessage, "请输入邮箱或手机号。", "error");
+      loginIdentifierInput?.focus();
+      return;
+    }
+
+    showMessage(authMessage, "");
+    setLoginStage("password");
+    return;
+  }
+
+  const password = loginPasswordInput?.value.trim();
+  if (!identifier) {
+    showMessage(authMessage, "请输入邮箱或手机号。", "error");
+    setLoginStage("identifier");
+    return;
+  }
+
+  if (!password) {
+    showMessage(authMessage, "请输入密码。", "error");
+    loginPasswordInput?.focus();
+    return;
+  }
   const users = readUsers();
   const normalizedIdentifier = (identifier || "").toLowerCase();
   const phoneDigits = (identifier || "").replace(/\D/g, "");
@@ -525,6 +586,7 @@ function handleLogin(event) {
   currentUser = user;
   setSession(user);
   loginForm.reset();
+  setLoginStage("identifier");
   enterLicenseMode();
 }
 
@@ -623,9 +685,11 @@ function removeLicense(licenseNumber) {
   showMessage(licenseMessage, "车牌已删除。", "success");
 }
 
-createAccountLink.addEventListener("click", (event) => {
-  event.preventDefault();
-  showRegisterView();
+createAccountLinks.forEach((link) => {
+  link.addEventListener("click", (event) => {
+    event.preventDefault();
+    showRegisterView();
+  });
 });
 
 backToLoginLink.addEventListener("click", (event) => {

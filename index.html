@@ -3,14 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Parallax</title>
+    <title>Parallax 风格登录与车牌注册</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="apple-header">
       <nav class="apple-nav" aria-label="主导航">
         <a class="nav-logo" href="#" aria-label="Parallax">
-          <img src="resource/img/Logo.png" alt="Parallax logo" />
+          <span class="logo-mark" aria-hidden="true"></span>
+          <span class="sr-only">Parallax</span>
         </a>
         <ul class="nav-links">
           <li><a href="#">My Account</a></li>
@@ -22,16 +23,22 @@
 
     <main>
       <section id="auth-shell" class="signin-shell">
-        <h1 class="signin-heading">Welcome to Parallax.</h1>
+        <h1 class="signin-heading">Parallax Account</h1>
+        <p class="signin-subheading">Manage your Parallax Account</p>
         <section class="signin-card" aria-labelledby="form-title">
+          <div class="account-logo" aria-hidden="true"></div>
           <h2 id="form-title" class="card-title">Sign in to Parallax</h2>
           <p id="form-subtitle" class="card-subtitle">
             Enter your email or phone number to continue.
           </p>
-          <form id="login-form" class="auth-form active" novalidate>
-            <label class="input-field">
+          <form
+            id="login-form"
+            class="auth-form active"
+            data-stage="identifier"
+            novalidate
+          >
+            <label class="input-field floating-field identifier-field">
               <span class="sr-only">Email or phone number</span>
-              <span class="field-icon" aria-hidden="true">•</span>
               <input
                 id="login-username"
                 type="text"
@@ -39,10 +46,21 @@
                 autocomplete="username"
                 required
               />
+              <span class="floating-label" aria-hidden="true"
+                >Email or Phone Number</span
+              >
             </label>
-            <label class="input-field">
+            <button type="submit" class="primary-button">Continue</button>
+            <p id="login-stage-note" class="stage-note">
+              Your Parallax Account information is used to sign in securely and
+              access your data. You’ll be asked for your password on the next
+              screen. Need a Parallax ID?
+              <a href="#" class="link create-account-trigger"
+                >Create yours now.</a
+              >
+            </p>
+            <label class="input-field floating-field password-field">
               <span class="sr-only">Password</span>
-              <span class="field-icon" aria-hidden="true">•</span>
               <input
                 id="login-password"
                 type="password"
@@ -50,15 +68,18 @@
                 autocomplete="current-password"
                 required
               />
+              <span class="floating-label" aria-hidden="true">Password</span>
             </label>
-            <label class="remember-row">
+            <label class="remember-row password-stage">
               <input id="remember-me" type="checkbox" />
               <span>Remember me</span>
             </label>
-            <button type="submit" class="primary-button">Sign in</button>
-            <div class="link-group">
+            <div class="link-group password-stage">
               <a href="#" id="forgot-password" class="link">Forgot your password?</a>
-              <a href="#" id="create-account-link" class="link"
+              <a
+                href="#"
+                id="create-account-link"
+                class="link create-account-trigger"
                 >Create Your Parallax Account</a
               >
             </div>
