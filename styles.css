@@ -44,7 +44,7 @@ a.link:focus {
   max-width: 980px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr;
   align-items: center;
   gap: 24px;
   padding: 0 24px;
@@ -54,11 +54,17 @@ a.link:focus {
 }
 
 .nav-logo {
-  font-size: 18px;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
+}
+
+.nav-logo img {
+  height: 18px;
+  width: auto;
+  display: block;
 }
 
 .nav-links {
@@ -81,12 +87,7 @@ a.link:focus {
   color: #000;
 }
 
-.nav-actions {
-  display: flex;
-  gap: 16px;
-  font-size: 15px;
-  color: rgba(29, 29, 31, 0.8);
-}
+/* nav actions removed */
 
 main {
   flex: 1;
@@ -124,6 +125,38 @@ main {
   gap: 24px;
 }
 
+.signin-card.register-mode {
+  max-width: 640px;
+  align-items: flex-start;
+  gap: 32px;
+  text-align: left;
+}
+
+.signin-card.register-mode .card-title,
+.signin-card.register-mode .card-subtitle {
+  display: none;
+}
+
+.signin-card.register-mode .message {
+  text-align: left;
+}
+
+.signin-card.reset-mode {
+  max-width: 760px;
+  text-align: left;
+  align-items: stretch;
+  gap: 32px;
+}
+
+.signin-card.reset-mode .card-title,
+.signin-card.reset-mode .card-subtitle {
+  display: none;
+}
+
+.signin-card.reset-mode .message {
+  text-align: left;
+}
+
 .card-title {
   margin: 0;
   font-size: 24px;
@@ -144,6 +177,251 @@ main {
 
 .auth-form.active {
   display: flex;
+}
+
+.reset-form {
+  gap: 0;
+}
+
+.reset-form.active {
+  display: block;
+}
+
+.reset-layout {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  align-items: start;
+}
+
+.reset-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.reset-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.reset-description {
+  margin: 0;
+  font-size: 15px;
+  color: rgba(29, 29, 31, 0.7);
+  line-height: 1.6;
+}
+
+.reset-captcha {
+  background: rgba(245, 245, 247, 0.75);
+}
+
+.reset-form .primary-button {
+  align-self: flex-start;
+  padding: 14px 32px;
+}
+
+.reset-links {
+  margin: 0;
+  font-size: 14px;
+}
+
+.reset-links .link {
+  font-weight: 500;
+}
+
+.reset-support {
+  background: rgba(245, 245, 247, 0.9);
+  border-radius: 18px;
+  border: 1px solid rgba(210, 210, 215, 0.7);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(29, 29, 31, 0.75);
+}
+
+.reset-support h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(29, 29, 31, 0.85);
+}
+
+.account-form {
+  width: 100%;
+  display: none;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.account-form.active {
+  display: flex;
+}
+
+.account-form .primary-button {
+  align-self: flex-start;
+  padding: 14px 32px;
+}
+
+.account-header {
+  text-align: left;
+}
+
+.account-title {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.account-subtitle {
+  margin: 0;
+  color: rgba(29, 29, 31, 0.65);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.account-subtitle .link {
+  font-weight: 500;
+  margin-left: 6px;
+}
+
+.field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field-row {
+  display: grid;
+  gap: 16px;
+}
+
+.field-row:not(.single) {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.field-block {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(29, 29, 31, 0.8);
+}
+
+.field-block input,
+.field-block select,
+.verification-box input {
+  border-radius: 12px;
+  border: 1px solid rgba(210, 210, 215, 0.7);
+  padding: 14px 16px;
+  font-size: 16px;
+  outline: none;
+  background: rgba(245, 245, 247, 0.9);
+  transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.field-block input:focus,
+.field-block select:focus,
+.verification-box input:focus {
+  border-color: rgba(0, 113, 227, 0.7);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
+}
+
+.field-block select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"%3E%3Cpath fill="%23666" d="M6 8 0 0h12z"/%3E%3C/svg%3E');
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 12px 8px;
+  padding-right: 40px;
+}
+
+.fieldset {
+  border: 1px solid rgba(210, 210, 215, 0.7);
+  border-radius: 16px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fieldset legend {
+  padding: 0 6px;
+}
+
+.choice-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  color: rgba(29, 29, 31, 0.8);
+}
+
+.choice-item input {
+  width: 18px;
+  height: 18px;
+  accent-color: #0071e3;
+}
+
+.account-info,
+.account-disclaimer {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(29, 29, 31, 0.65);
+  line-height: 1.6;
+}
+
+.verification-box {
+  border: 1px solid rgba(210, 210, 215, 0.7);
+  border-radius: 16px;
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+  background: rgba(245, 245, 247, 0.6);
+}
+
+.verification-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(29, 29, 31, 0.8);
+}
+
+.verification-code {
+  font-size: 24px;
+  letter-spacing: 8px;
+  font-weight: 600;
+}
+
+.verification-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.link-button {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 14px;
+  color: #06c;
+  cursor: pointer;
+}
+
+.link-button:hover,
+.link-button:focus {
+  text-decoration: underline;
 }
 
 .input-field {
@@ -369,6 +647,10 @@ main {
     grid-template-columns: auto auto;
     justify-content: space-between;
   }
+
+  .reset-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
@@ -379,6 +661,26 @@ main {
   .signin-card,
   .license-panel {
     padding: 32px 24px 36px;
+  }
+
+  .signin-card.register-mode {
+    padding: 32px 24px 36px;
+  }
+
+  .signin-card.reset-mode {
+    padding: 32px 24px 36px;
+  }
+
+  .reset-title {
+    font-size: 24px;
+  }
+
+  .field-row:not(.single) {
+    grid-template-columns: 1fr;
+  }
+
+  .account-title {
+    font-size: 24px;
   }
 
   main {
