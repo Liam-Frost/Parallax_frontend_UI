@@ -13,11 +13,11 @@
           <span class="logo-mark" aria-hidden="true"></span>
           <span class="sr-only">Parallax</span>
         </a>
-          <ul class="nav-links">
-            <li><a href="#" id="nav-account">My Account</a></li>
-            <li><a href="#" id="nav-vehicles">My Vehicles</a></li>
-            <li><a href="#" id="nav-query">Query</a></li>
-            <li id="nav-signout-item" class="hidden">
+        <ul class="nav-links">
+          <li><a href="#" id="nav-account">My Account</a></li>
+          <li><a href="#" id="nav-vehicles">My Vehicles</a></li>
+          <li><a href="#" id="nav-query">Query</a></li>
+          <li id="nav-signout-item" class="hidden">
             <a href="#" id="nav-signout">Sign out</a>
           </li>
         </ul>
@@ -369,6 +369,130 @@
             </table>
           </div>
         </div>
+      </section>
+
+      <section id="account-section" class="license-panel hidden">
+        <div class="license-header">
+          <h2>Account Management</h2>
+          <p>Update your contact information and password, or delete your account.</p>
+        </div>
+
+        <!-- Contact info form -->
+        <form id="account-contact-form" class="license-form">
+          <h3>Contact information</h3>
+          <label class="license-field">
+            <span>Email</span>
+            <input id="account-email" type="email" required />
+          </label>
+          <label class="license-field">
+            <span>Country code</span>
+            <select id="account-phone-country" required>
+              <option value="" disabled selected>Select</option>
+              <option value="+86">+86 (China)</option>
+              <option value="+1">+1 (USA/Canada)</option>
+              <option value="+44">+44 (UK)</option>
+              <option value="+61">+61 (Australia)</option>
+            </select>
+          </label>
+          <label class="license-field">
+            <span>Phone number</span>
+            <input id="account-phone" type="tel" required />
+          </label>
+          <label class="license-field">
+            <span>Current password</span>
+            <input
+              id="account-current-password-for-contact"
+              type="password"
+              required
+            />
+          </label>
+          <button type="submit" class="primary-button">
+            Save contact info
+          </button>
+          <p id="account-contact-message" class="message" role="alert"></p>
+        </form>
+
+        <!-- Change password form -->
+        <form id="account-password-form" class="license-form">
+          <h3>Change password</h3>
+          <label class="license-field">
+            <span>Current password</span>
+            <input id="account-old-password" type="password" required />
+          </label>
+          <label class="license-field">
+            <span>New password</span>
+            <input id="account-new-password" type="password" required />
+          </label>
+          <label class="license-field">
+            <span>Confirm new password</span>
+            <input id="account-confirm-password" type="password" required />
+          </label>
+
+          <div class="verification-box">
+            <p class="verification-title">Type the characters in the image</p>
+            <div
+              class="verification-code"
+              id="account-captcha-display"
+            >
+              1234
+            </div>
+            <div class="verification-actions">
+              <button
+                type="button"
+                class="link-button"
+                id="account-refresh-captcha"
+              >
+                New code
+              </button>
+            </div>
+            <input
+              id="account-captcha-input"
+              type="text"
+              aria-label="Verification code"
+              required
+            />
+          </div>
+
+          <button type="submit" class="primary-button">
+            Change password
+          </button>
+          <p id="account-password-message" class="message" role="alert"></p>
+        </form>
+
+        <!-- Delete account -->
+        <div class="license-form">
+          <h3>Delete account</h3>
+          <p>
+            This will permanently delete your account and all vehicles stored in this
+            browser.
+          </p>
+          <button id="account-delete" class="secondary-button">
+            Delete account
+          </button>
+        </div>
+      </section>
+
+      <section id="query-section" class="license-panel hidden">
+        <div class="license-header">
+          <h2>Vehicles Query</h2>
+          <p>Check blacklist status for any license plate in the system.</p>
+        </div>
+
+        <form id="query-form" class="license-form">
+          <label class="license-field">
+            <span>License plate number</span>
+            <input
+              id="query-license-number"
+              type="text"
+              placeholder="e.g., ABC1234"
+              pattern="^[A-Z0-9-]{1,7}$"
+              required
+            />
+          </label>
+          <button type="submit" class="primary-button">Query</button>
+        </form>
+
+        <p id="query-message" class="message" role="alert"></p>
       </section>
     </main>
 

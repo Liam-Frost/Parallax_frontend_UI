@@ -64,6 +64,12 @@ const accountRefreshCaptchaButton = document.getElementById(
   "account-refresh-captcha"
 );
 const accountDeleteButton = document.getElementById("account-delete");
+const navAccountLink = document.getElementById("nav-account");
+const navQueryLink = document.getElementById("nav-query");
+const querySection = document.getElementById("query-section");
+const queryForm = document.getElementById("query-form");
+const queryLicenseInput = document.getElementById("query-license-number");
+const queryMessage = document.getElementById("query-message");
 
 let currentUser = null;
 let loginStage = "identifier";
@@ -695,6 +701,8 @@ function enterLicenseMode() {
   if (!currentUser) return;
   authShell.classList.add("hidden");
   licenseSection.classList.remove("hidden");
+  accountSection?.classList.add("hidden");
+  querySection?.classList.add("hidden");
   setNavSignoutVisibility(true);
   licenseForm?.reset();
   populateVehicleSelects();
@@ -712,6 +720,7 @@ function exitLicenseMode() {
   setSession(null);
   licenseSection.classList.add("hidden");
   accountSection?.classList.add("hidden");
+  querySection?.classList.add("hidden");
   authShell.classList.remove("hidden");
   setNavSignoutVisibility(false);
   showLoginView();
@@ -759,11 +768,36 @@ function enterAccountMode() {
   authShell?.classList.add("hidden");
   licenseSection?.classList.add("hidden");
   accountSection?.classList.remove("hidden");
+  querySection?.classList.add("hidden");
   setNavSignoutVisibility(true);
   populateAccountFields();
   generateCaptcha("account");
   showMessage(accountContactMessage, "");
   showMessage(accountPasswordMessage, "");
+}
+
+function enterQueryMode() {
+  if (!currentUser) {
+    // if not signed in, go back to auth shell
+    setNavSignoutVisibility(false);
+    licenseSection?.classList.add("hidden");
+    accountSection?.classList.add("hidden");
+    querySection?.classList.add("hidden");
+    authShell?.classList.remove("hidden");
+    showLoginView();
+    return;
+  }
+
+  authShell?.classList.add("hidden");
+  licenseSection?.classList.add("hidden");
+  accountSection?.classList.add("hidden");
+  querySection?.classList.remove("hidden");
+  setNavSignoutVisibility(true);
+  showMessage(queryMessage, "");
+  queryForm?.reset();
+  if (queryLicenseInput) {
+    queryLicenseInput.focus();
+  }
 }
 
 function handleLicenseSubmit(event) {
@@ -819,6 +853,60 @@ function handleLicenseSubmit(event) {
   licenseForm.reset();
   populateVehicleSelects();
   refreshLicenseList();
+}
+
+function handleQuerySubmit(event) {
+  event.preventDefault();
+
+  if (!currentUser) {
+    showLoginView();
+    return;
+  }
+
+  const raw = (queryLicenseInput?.value || "").trim().toUpperCase();
+  if (!LICENSE_PATTERN.test(raw)) {
+    showMessage(
+      queryMessage,
+      "Enter a valid license plate (1–7 chars, A–Z, 0–9, or hyphen).",
+      "error"
+    );
+    return;
+  }
+
+  const licenses = readLicenses();
+  let found = false;
+  let blacklisted = false;
+
+  Object.values(licenses).forEach((userLicenses) => {
+    (userLicenses || []).forEach((entry) => {
+      if (entry.licenseNumber === raw) {
+        found = true;
+        if (entry.blacklisted) {
+          blacklisted = true;
+        }
+      }
+    });
+  });
+
+  if (!found) {
+    showMessage(
+      queryMessage,
+      `License ${raw} was not found in the system.`,
+      "success"
+    );
+  } else if (blacklisted) {
+    showMessage(
+      queryMessage,
+      `License ${raw} is currently blacklisted.`,
+      "success"
+    );
+  } else {
+    showMessage(
+      queryMessage,
+      `License ${raw} is not blacklisted.`,
+      "success"
+    );
+  }
 }
 
 function handleAccountContactSubmit(event) {
@@ -967,6 +1055,7 @@ function handleAccountDelete() {
   currentUser = null;
   licenseSection?.classList.add("hidden");
   accountSection?.classList.add("hidden");
+  querySection?.classList.add("hidden");
   authShell?.classList.remove("hidden");
   setNavSignoutVisibility(false);
   showLoginView();
@@ -1042,6 +1131,12 @@ function handleNavVehicles(event) {
   if (licenseSection) {
     licenseSection.classList.add("hidden");
   }
+  if (accountSection) {
+    accountSection.classList.add("hidden");
+  }
+  if (querySection) {
+    querySection.classList.add("hidden");
+  }
   if (authShell) {
     authShell.classList.remove("hidden");
   }
@@ -1078,11 +1173,30 @@ registerForm.addEventListener("submit", handleRegister);
 loginForm.addEventListener("submit", handleLogin);
 resetForm?.addEventListener("submit", handleReset);
 licenseForm.addEventListener("submit", handleLicenseSubmit);
-navVehiclesLink?.addEventListener("click", handleNavVehicles);
+navVehiclesLink?.addEventListener("click", (event) => {
+  event.preventDefault();
+  handleNavVehicles(event);
+});
+navAccountLink?.addEventListener("click", (event) => {
+  event.preventDefault();
+  enterAccountMode();
+});
+navQueryLink?.addEventListener("click", (event) => {
+  event.preventDefault();
+  enterQueryMode();
+});
 navSignoutLink?.addEventListener("click", (event) => {
   event.preventDefault();
   exitLicenseMode();
 });
+accountContactForm?.addEventListener("submit", handleAccountContactSubmit);
+accountPasswordForm?.addEventListener("submit", handleAccountPasswordSubmit);
+accountDeleteButton?.addEventListener("click", (event) => {
+  event.preventDefault();
+  handleAccountDelete();
+});
+
+queryForm?.addEventListener("submit", handleQuerySubmit);
 
 document.addEventListener("DOMContentLoaded", () => {
   populateBirthSelects();
