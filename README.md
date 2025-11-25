@@ -1,4 +1,5 @@
-# Frontend_Test
+# Parallax frontend UI
+
 
 A static Parallax-themed demo built with vanilla HTML, CSS, and JavaScript to showcase an identifier-first sign-in experience, account creation, password reset, and a simple license registration workflow. All state is persisted in the browser via `localStorage` so the flows can be explored without any backend services.
 
