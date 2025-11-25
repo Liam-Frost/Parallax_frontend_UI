@@ -85,16 +85,6 @@ const VEHICLE_MODELS = {
   Mercedes: ["C-Class", "E-Class", "GLC", "GLE"],
 };
 
-const LICENSE_PATTERN = /^[A-Z0-9-]{1,7}$/;
-const VEHICLE_MODELS = {
-  Toyota: ["Camry", "Corolla", "RAV4", "Prius"],
-  Honda: ["Civic", "Accord", "CR-V", "Pilot"],
-  Ford: ["F-150", "Escape", "Mustang", "Explorer"],
-  Tesla: ["Model S", "Model 3", "Model X", "Model Y"],
-  BMW: ["3 Series", "5 Series", "X3", "X5"],
-  Mercedes: ["C-Class", "E-Class", "GLC", "GLE"],
-};
-
 function readUsers() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEYS.users)) || [];
