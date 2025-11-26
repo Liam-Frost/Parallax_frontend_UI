@@ -370,7 +370,7 @@ function showMessage(element, text, type = "") {
 function updateBirthDayOptions(preserveSelection = true) {
   if (!daySelect) return;
   const previousValue = preserveSelection ? daySelect.value : "";
-  const selectedMonth = parseInt(?.value || "", 10);
+  const selectedMonth = parseInt(monthSelect ? monthSelect.value : "", 10);
   const selectedYear = parseInt(yearSelect?.value || "", 10) || new Date().getFullYear();
   let daysInMonth = 31;
 
