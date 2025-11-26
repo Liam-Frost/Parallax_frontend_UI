@@ -83,12 +83,179 @@ const LICENSE_PATTERN = /^[A-Z0-9-]{1,7}$/;
 const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
 const VEHICLE_MODELS = {
-  Toyota: ["Camry", "Corolla", "RAV4", "Prius"],
-  Honda: ["Civic", "Accord", "CR-V", "Pilot"],
-  Ford: ["F-150", "Escape", "Mustang", "Explorer"],
-  Tesla: ["Model S", "Model 3", "Model X", "Model Y"],
-  BMW: ["3 Series", "5 Series", "X3", "X5"],
-  Mercedes: ["C-Class", "E-Class", "GLC", "GLE"],
+  Engneering: [
+    "CPEN", "EE", "EMPH",
+    "BMEG", "CVIL", "MECH"
+  ],
+  StarWars: [
+    "DeathStar", "MF", "X-Wing",
+    "R2D2", "C3PO", "TIE Fighter"
+  ],
+  Acura: [
+    "ILX", "TLX", "RLX",
+    "RDX", "MDX"
+  ],
+  Audi: [
+    "A3", "A4", "A5", "A6", "A7", "A8",
+    "Q3", "Q5", "Q7", "Q8",
+    "e-tron", "Q4 e-tron"
+  ],
+  BMW: [
+    "1 Series", "2 Series", "3 Series", "4 Series", "5 Series", "7 Series",
+    "X1", "X3", "X4", "X5", "X6", "X7",
+    "i3", "i4", "iX", "iX3"
+  ],
+  Buick: [
+    "Encore", "Encore GX", "Envision", "Enclave", "Regal"
+  ],
+  Cadillac: [
+    "CT4", "CT5", "CT6",
+    "XT4", "XT5", "XT6",
+    "Escalade"
+  ],
+  Chevrolet: [
+    "Spark", "Cruze", "Malibu", "Impala",
+    "Camaro", "Corvette",
+    "Trax", "Equinox", "Blazer", "Traverse",
+    "Tahoe", "Suburban",
+    "Colorado", "Silverado 1500", "Silverado 2500"
+  ],
+  Chrysler: [
+    "300", "Pacifica", "Voyager"
+  ],
+  Dodge: [
+    "Charger", "Challenger",
+    "Durango", "Journey",
+    "Grand Caravan"
+  ],
+  Fiat: [
+    "500", "500X", "500L"
+  ],
+  Ford: [
+    "Fiesta", "Focus", "Fusion",
+    "Mustang",
+    "EcoSport", "Escape", "Edge", "Explorer", "Expedition",
+    "Bronco", "Bronco Sport",
+    "Ranger", "F-150", "F-250 Super Duty"
+  ],
+  Genesis: [
+    "G70", "G80", "G90",
+    "GV60", "GV70", "GV80"
+  ],
+  GMC: [
+    "Terrain", "Acadia", "Yukon",
+    "Canyon", "Sierra 1500", "Sierra 2500"
+  ],
+  Honda: [
+    "Fit", "Civic", "Accord",
+    "Insight",
+    "HR-V", "CR-V", "Passport", "Pilot",
+    "Odyssey",
+    "Ridgeline"
+  ],
+  Hyundai: [
+    "Accent", "Elantra", "Sonata", "Ioniq", "Veloster",
+    "Kona", "Tucson", "Santa Fe", "Palisade",
+    "Ioniq 5", "Ioniq 6"
+  ],
+  Infiniti: [
+    "Q50", "Q60",
+    "QX50", "QX55", "QX60", "QX80"
+  ],
+  Jaguar: [
+    "XE", "XF", "XJ",
+    "F-Type",
+    "E-PACE", "F-PACE", "I-PACE"
+  ],
+  Jeep: [
+    "Renegade", "Compass", "Cherokee", "Grand Cherokee",
+    "Wrangler", "Gladiator"
+  ],
+  Kia: [
+    "Rio", "Forte", "K5", "Stinger",
+    "Soul", "Seltos", "Sportage", "Sorento", "Telluride",
+    "Niro", "EV6"
+  ],
+  "Land Rover": [
+    "Range Rover", "Range Rover Sport", "Range Rover Evoque",
+    "Discovery", "Discovery Sport",
+    "Defender"
+  ],
+  Lexus: [
+    "IS", "ES", "GS", "LS",
+    "UX", "NX", "RX", "GX", "LX",
+    "RC", "LC"
+  ],
+  Lincoln: [
+    "Corsair", "Nautilus", "Aviator", "Navigator"
+  ],
+  Maserati: [
+    "Ghibli", "Quattroporte", "Levante", "Grecale", "MC20"
+  ],
+  Mazda: [
+    "Mazda3", "Mazda6",
+    "CX-3", "CX-30", "CX-5", "CX-50", "CX-9", "CX-90",
+    "MX-5 Miata"
+  ],
+  "Mercedes-Benz": [
+    "A-Class", "C-Class", "E-Class", "S-Class",
+    "CLA", "CLS",
+    "GLA", "GLB", "GLC", "GLE", "GLS", "G-Class",
+    "EQE", "EQS"
+  ],
+  Mini: [
+    "Cooper 3 Door", "Cooper 5 Door", "Clubman", "Countryman"
+  ],
+  Mitsubishi: [
+    "Mirage", "Lancer",
+    "Eclipse Cross", "Outlander", "Outlander PHEV",
+    "RVR / ASX"
+  ],
+  Nissan: [
+    "Versa", "Sentra", "Altima", "Maxima",
+    "Leaf",
+    "Kicks", "Rogue", "Pathfinder", "Murano", "Armada",
+    "Frontier", "Titan"
+  ],
+  Porsche: [
+    "718 Boxster", "718 Cayman",
+    "911",
+    "Panamera", "Taycan",
+    "Macan", "Cayenne"
+  ],
+  Ram: [
+    "1500", "2500", "3500", "ProMaster"
+  ],
+  "Rolls-Royce": [
+    "Ghost", "Phantom", "Wraith", "Dawn", "Cullinan"
+  ],
+  Subaru: [
+    "Impreza", "Legacy",
+    "Crosstrek", "Forester", "Outback", "Ascent",
+    "BRZ"
+  ],
+  Tesla: [
+    "Model 3", "Model Y", "Model S", "Model X", "Cybertruck"
+  ],
+  Toyota: [
+    "Yaris", "Corolla", "Camry", "Avalon",
+    "Prius",
+    "C-HR", "RAV4", "Highlander", "4Runner", "Sequoia",
+    "Sienna",
+    "Tacoma", "Tundra",
+    "GR86", "Supra"
+  ],
+  Volkswagen: [
+    "Golf", "Jetta", "Passat", "Arteon",
+    "Tiguan", "Atlas", "Atlas Cross Sport",
+    "ID.4"
+  ],
+  Volvo: [
+    "S60", "S90",
+    "V60", "V90",
+    "XC40", "XC60", "XC90",
+    "EX30", "EX90"
+  ]
 };
 
 function readUsers() {
