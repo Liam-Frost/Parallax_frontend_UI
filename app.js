@@ -142,8 +142,10 @@ const VEHICLE_MODELS = {
     "Grand Caravan"
   ],
   Engneering: [
-    "CPEN", "EE", "EMPH",
-    "BMEG", "CVIL", "MECH"
+    "CPEN", "ELEC", "ENPH",
+    "BMEG", "CVIL", "MECH",
+    "MANU", "ENVL", "MTRL",
+    "CHBE", "MINE", "IGEN"
   ],
   Fiat: [
     "500", "500X", "500L"
@@ -214,6 +216,13 @@ const VEHICLE_MODELS = {
     "CX-3", "CX-30", "CX-5", "CX-50", "CX-9", "CX-90",
     "MX-5 Miata"
   ],
+  MBTI: [
+    "INTJ", "INTP", "ENTJ", "ENTP",
+    "INFJ", "INFP", "ENFJ", "ENFP",
+    "ISTJ", "ISTJ", "ESTJ", "ESFJ",
+    "ISTP", "ISFP", "ESTP", "ESFP",
+    "REST"
+  ],
   "Mercedes-Benz": [
     "A-Class", "C-Class", "E-Class", "S-Class",
     "CLA", "CLS",
@@ -236,7 +245,7 @@ const VEHICLE_MODELS = {
   ],
   Porsche: [
     "718 Boxster", "718 Cayman",
-    "911",
+    "911", "918",
     "Panamera", "Taycan",
     "Macan", "Cayenne"
   ],
