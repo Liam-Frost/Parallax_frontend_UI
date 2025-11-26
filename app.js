@@ -12,7 +12,6 @@ const registerForm = document.getElementById("register-form");
 const resetForm = document.getElementById("reset-form");
 const authMessage = document.getElementById("auth-message");
 const formTitle = document.getElementById("form-title");
-const formSubtitle = document.getElementById("form-subtitle");
 const createAccountLinks = document.querySelectorAll(
   ".create-account-trigger"
 );
@@ -361,12 +360,12 @@ const VEHICLE_MODELS = {
 };
 const ringCfg = {
   layers: 4,
-  baseRadiusRatio: 0.20,
-  gap: 10,
-  baseDots: 24,
-  dotsDelta: 2,
-  dotSizeInner: 2.8,
-  dotSizeOuter: 4.5,
+  baseRadiusRatio: 0.26,
+  gap: 13,
+  baseDots: 25,
+  dotsDelta: -0.11,
+  dotSizeInner: 3.8,
+  dotSizeOuter: 5.8,
   ringStartAngle: (-10 * Math.PI / 180),
 };
 
@@ -749,13 +748,6 @@ function setLoginStage(stage) {
       stage === "identifier" ? "Continue" : "Sign in";
   }
 
-  if (formSubtitle) {
-    formSubtitle.textContent =
-      stage === "identifier"
-        ? "Enter your email or phone number to continue."
-        : "Enter your password to continue.";
-  }
-
   if (stage === "identifier") {
     if (loginPasswordInput) {
       loginPasswordInput.value = "";
@@ -787,7 +779,6 @@ function showRegisterView() {
     signinCard.classList.remove("reset-mode");
   }
   formTitle.textContent = "";
-  formSubtitle.textContent = "";
   registerForm.classList.add("active");
   loginForm.classList.remove("active");
   resetForm?.classList.remove("active");
@@ -801,8 +792,6 @@ function showResetView() {
     signinCard.classList.remove("register-mode");
   }
   formTitle.textContent = "Reset your password";
-  formSubtitle.textContent =
-    "Enter your email address or phone number that you use with your account to continue.";
   loginForm.classList.remove("active");
   registerForm.classList.remove("active");
   resetForm?.classList.add("active");

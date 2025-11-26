@@ -59,15 +59,16 @@ a.link:focus {
   align-items: center;
   justify-content: center;
   height: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: #111111;
 }
 
-.nav-logo .logo-mark {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 25% 25%, #fff 0%, #d2d2d7 55%, #a1a1a6 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+.nav-logo-text {
+  line-height: 1;
 }
 
 .nav-links {
@@ -111,11 +112,11 @@ main {
 .signin-heading {
   font-size: clamp(32px, 5vw, 48px);
   font-weight: 600;
-  margin: 0;
+  margin: 30px 0 0;
 }
 
 .signin-subheading {
-  margin: 0;
+  margin: -30px 0 0;
   font-size: 17px;
   color: rgba(29, 29, 31, 0.7);
 }
@@ -125,26 +126,29 @@ main {
   border-radius: 22px;
   border: 1px solid rgba(210, 210, 215, 0.7);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-  padding: 40px 48px 48px;
+  padding: 40px 48px 0px;
   width: 100%;
   max-width: 480px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 24px;
+  gap: 20px;
+  margin: 50px 0 0;
 }
 
-.account-logo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 24px;
+.signin-card .account-logo {
+  width: 240px;
+  height: 240px;
+  margin: 2px auto 10px;
+  display: block;
 }
 
 .parallax-ring-logo {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 100%;
+  height: 100%;
+  border-radius: 0%;
+  overflow: hidden;
 }
 
 .parallax-ring-bg {
@@ -152,7 +156,11 @@ main {
   inset: 0;
   border-radius: 50%;
   background:
-    radial-gradient(120px 120px at 50% 50%, rgba(255,255,255,0.35), rgba(255,255,255,0) 30%),
+    radial-gradient(
+      circle at center,
+      rgba(255,255,255,0.8) 0%,
+      rgba(255,255,255,0.0) 35%
+    ),
     conic-gradient(
       from 215deg at 50% 50%,
       #ff6a3d, #ff9f1c, #ffd166, #8df3ff,
@@ -160,7 +168,7 @@ main {
       #ff2e93, #ff2e6e, #ff6a3d
     );
   background-blend-mode: screen, normal;
-  filter: saturate(125%) contrast(108%) brightness(96%);
+  filter: saturate(90%) brightness(95%) contrast(100%);
 }
 
 #parallax-ring-mask {
@@ -177,7 +185,7 @@ main {
   display: grid;
   place-items: center;
   pointer-events: none;
-  font-size: 28px;
+  font-size: 48px;
   font-weight: 600;
   color: #000;
 }
@@ -225,16 +233,11 @@ main {
   font-weight: 600;
 }
 
-.card-subtitle {
-  margin: 0;
-  font-size: 15px;
-  color: rgba(29, 29, 31, 0.7);
-}
-
 .auth-form {
   display: none;
   flex-direction: column;
   gap: 18px;
+  margin: 8px 0 0;
 }
 
 #login-form {
@@ -601,7 +604,7 @@ main {
 
 .primary-button {
   border: none;
-  border-radius: 24px;
+  border-radius: 12px;
   background: linear-gradient(135deg, #0071e3, #0a84ff);
   color: #fff;
   font-size: 16px;
@@ -619,7 +622,7 @@ main {
 
 .secondary-button {
   border: 1px solid rgba(29, 29, 31, 0.2);
-  border-radius: 24px;
+  border-radius: 12px;
   background: transparent;
   color: #1d1d1f;
   font-size: 16px;
@@ -732,7 +735,7 @@ main {
   background: transparent;
   color: #d70015;
   font-weight: 700;
-  border-radius: 18px;
+  border-radius: 9px;
   padding: 12px 16px;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
@@ -816,7 +819,7 @@ main {
 
 .global-footer {
   border-top: 1px solid rgba(210, 210, 215, 0.6);
-  padding: 24px;
+  padding: 18px;
   background: rgba(255, 255, 255, 0.82);
   text-align: center;
   font-size: 12px;
@@ -827,7 +830,7 @@ main {
   display: flex;
   justify-content: center;
   gap: 16px;
-  margin-bottom: 12px;
+  margin-bottom: 0px;
 }
 
 .hidden {
@@ -844,6 +847,43 @@ main {
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+
+.refresh-button {
+  position: fixed;
+  right: 24px;
+  bottom: 110px;
+  z-index: 1000;
+
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: none;
+  background: #007aff;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0.9;
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.refresh-button:hover {
+  background: #0a84ff;
+  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.refresh-button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}
+
 
 @media (max-width: 900px) {
   .nav-links {
