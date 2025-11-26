@@ -83,25 +83,80 @@ const captchaState = {
 
 const LICENSE_PATTERN = /^[A-Z0-9-]{1,7}$/;
 const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/;
 const REGION_OPTIONS = [
   { iso: "US", name: "United States", phoneCode: "+1" },
-  { iso: "CA", name: "Canada",        phoneCode: "+1" },
-  { iso: "MX", name: "Mexico",        phoneCode: "+52" },
-  { iso: "BR", name: "Brazil",        phoneCode: "+55" },
+  { iso: "CA", name: "Canada", phoneCode: "+1" },
   { iso: "GB", name: "United Kingdom", phoneCode: "+44" },
-  { iso: "DE", name: "Germany",        phoneCode: "+49" },
-  { iso: "FR", name: "France",         phoneCode: "+33" },
-  { iso: "IT", name: "Italy",          phoneCode: "+39" },
-  { iso: "ES", name: "Spain",          phoneCode: "+34" },
-  { iso: "NL", name: "Netherlands",    phoneCode: "+31" },
-  { iso: "SE", name: "Sweden",         phoneCode: "+46" },
-  { iso: "CN", name: "China",          phoneCode: "+86" },
-  { iso: "HK", name: "Hong Kong",      phoneCode: "+852" },
-  { iso: "TW", name: "Taiwan",         phoneCode: "+886" },
-  { iso: "JP", name: "Japan",          phoneCode: "+81" },
-  { iso: "KR", name: "South Korea",    phoneCode: "+82" },
-  { iso: "SG", name: "Singapore",      phoneCode: "+65" },
+  { iso: "AU", name: "Australia", phoneCode: "+61" },
+  { iso: "NZ", name: "New Zealand", phoneCode: "+64" },
+
+  { iso: "CN", name: "China", phoneCode: "+86" },
+  { iso: "HK", name: "Hong Kong SAR", phoneCode: "+852" },
+  { iso: "MO", name: "Macao SAR", phoneCode: "+853" },
+  { iso: "TW", name: "Taiwan", phoneCode: "+886" },
+  { iso: "JP", name: "Japan", phoneCode: "+81" },
+  { iso: "KR", name: "South Korea", phoneCode: "+82" },
+
+  { iso: "DE", name: "Germany", phoneCode: "+49" },
+  { iso: "FR", name: "France", phoneCode: "+33" },
+  { iso: "IT", name: "Italy", phoneCode: "+39" },
+  { iso: "ES", name: "Spain", phoneCode: "+34" },
+  { iso: "PT", name: "Portugal", phoneCode: "+351" },
+  { iso: "NL", name: "Netherlands", phoneCode: "+31" },
+  { iso: "BE", name: "Belgium", phoneCode: "+32" },
+  { iso: "CH", name: "Switzerland", phoneCode: "+41" },
+  { iso: "AT", name: "Austria", phoneCode: "+43" },
+  { iso: "DK", name: "Denmark", phoneCode: "+45" },
+  { iso: "NO", name: "Norway", phoneCode: "+47" },
+  { iso: "SE", name: "Sweden", phoneCode: "+46" },
+  { iso: "FI", name: "Finland", phoneCode: "+358" },
+  { iso: "IS", name: "Iceland", phoneCode: "+354" },
+  { iso: "IE", name: "Ireland", phoneCode: "+353" },
+  { iso: "RU", name: "Russia", phoneCode: "+7" },
+  { iso: "UA", name: "Ukraine", phoneCode: "+380" },
+  { iso: "PL", name: "Poland", phoneCode: "+48" },
+  { iso: "CZ", name: "Czech Republic", phoneCode: "+420" },
+  { iso: "SK", name: "Slovakia", phoneCode: "+421" },
+  { iso: "HU", name: "Hungary", phoneCode: "+36" },
+  { iso: "RO", name: "Romania", phoneCode: "+40" },
+  { iso: "BG", name: "Bulgaria", phoneCode: "+359" },
+  { iso: "GR", name: "Greece", phoneCode: "+30" },
+  { iso: "TR", name: "Turkey", phoneCode: "+90" },
+
+  { iso: "IL", name: "Israel", phoneCode: "+972" },
+  { iso: "SA", name: "Saudi Arabia", phoneCode: "+966" },
+  { iso: "AE", name: "United Arab Emirates", phoneCode: "+971" },
+  { iso: "QA", name: "Qatar", phoneCode: "+974" },
+  { iso: "KW", name: "Kuwait", phoneCode: "+965" },
+  { iso: "BH", name: "Bahrain", phoneCode: "+973" },
+  { iso: "OM", name: "Oman", phoneCode: "+968" },
+
+  { iso: "EG", name: "Egypt", phoneCode: "+20" },
+  { iso: "ZA", name: "South Africa", phoneCode: "+27" },
+  { iso: "NG", name: "Nigeria", phoneCode: "+234" },
+  { iso: "KE", name: "Kenya", phoneCode: "+254" },
+
+  { iso: "IN", name: "India", phoneCode: "+91" },
+  { iso: "PK", name: "Pakistan", phoneCode: "+92" },
+  { iso: "BD", name: "Bangladesh", phoneCode: "+880" },
+  { iso: "LK", name: "Sri Lanka", phoneCode: "+94" },
+
+  { iso: "ID", name: "Indonesia", phoneCode: "+62" },
+  { iso: "MY", name: "Malaysia", phoneCode: "+60" },
+  { iso: "SG", name: "Singapore", phoneCode: "+65" },
+  { iso: "TH", name: "Thailand", phoneCode: "+66" },
+  { iso: "VN", name: "Vietnam", phoneCode: "+84" },
+  { iso: "PH", name: "Philippines", phoneCode: "+63" },
+
+  { iso: "AR", name: "Argentina", phoneCode: "+54" },
+  { iso: "BR", name: "Brazil", phoneCode: "+55" },
+  { iso: "CL", name: "Chile", phoneCode: "+56" },
+  { iso: "CO", name: "Colombia", phoneCode: "+57" },
+  { iso: "PE", name: "Peru", phoneCode: "+51" },
+  { iso: "UY", name: "Uruguay", phoneCode: "+598" },
+  { iso: "VE", name: "Venezuela", phoneCode: "+58" },
+  { iso: "MX", name: "Mexico", phoneCode: "+52" }
 ];
 const VEHICLE_MODELS = {
   Acura: [
@@ -110,12 +165,15 @@ const VEHICLE_MODELS = {
   ],
   Audi: [
     "A3", "A4", "A5", "A6", "A7", "A8",
+    "R3", "R4", "R5", "R6", "R7", "R8",
+    "RS3", "RS4", "RS5", "RS6", "RS7",
     "Q3", "Q5", "Q7", "Q8",
     "e-tron", "Q4 e-tron"
   ],
   BMW: [
-    "1 Series", "2 Series", "3 Series", "4 Series", "5 Series", "7 Series",
-    "X1", "X3", "X4", "X5", "X6", "X7",
+    "1 Series", "2 Series", "3 Series", "4 Series", "5 Series", "7 Series", "8 Series",
+    "X1", "X2", "X3", "X4", "X5", "X6", "X7",
+    "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8",
     "i3", "i4", "iX", "iX3"
   ],
   Buick: [
@@ -224,11 +282,34 @@ const VEHICLE_MODELS = {
     "REST"
   ],
   "Mercedes-Benz": [
-    "A-Class", "C-Class", "E-Class", "S-Class",
+    "A-Class", "B-Class", "C-Class", "E-Class", "S-Class",
     "CLA", "CLS",
     "GLA", "GLB", "GLC", "GLE", "GLS", "G-Class",
     "EQE", "EQS"
   ],
+"Mercedes-Maybach": [
+  "S-Class",
+  "GLS",
+  "EQS SUV",
+  "Pullman"
+],
+"Mercedes-AMG": [
+  "A-Class",
+  "CLA",
+  "C-Class",
+  "E-Class",
+  "S-Class",
+  "GT",
+  "SL",
+  "G-Class",
+  "GLA",
+  "GLB",
+  "GLC",
+  "GLE",
+  "GLS",
+  "EQE",
+  "EQS"
+]
   Mini: [
     "Cooper 3 Door", "Cooper 5 Door", "Clubman", "Countryman"
   ],
