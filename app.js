@@ -60,7 +60,10 @@ const welcomeMessage = document.getElementById("welcome-message");
 const vehicleMakeSelect = document.getElementById("vehicle-make");
 const vehicleModelSelect = document.getElementById("vehicle-model");
 const vehicleYearSelect = document.getElementById("vehicle-year");
+const vehiclesTable = document.getElementById("vehicles-table");
+const vehiclesTableHead = document.getElementById("vehicles-table-head");
 const vehiclesTableBody = document.getElementById("vehicles-table-body");
+const licenseListContainer = document.querySelector(".license-list-container");
 const navVehiclesLink = document.getElementById("nav-vehicles");
 const navSignoutItem = document.getElementById("nav-signout-item");
 const navSignoutLink = document.getElementById("nav-signout");
@@ -103,6 +106,13 @@ const querySection = document.getElementById("query-section");
 const queryForm = document.getElementById("query-form");
 const queryLicenseInput = document.getElementById("query-license-number");
 const queryMessage = document.getElementById("query-message");
+const vehicleFiltersContainer = document.getElementById("vehicle-filters");
+const vehicleSearchInput = document.getElementById("vehicle-filter-search");
+const vehicleBlacklistSelect = document.getElementById("vehicle-filter-blacklist");
+const vehicleOwnerFilter = document.getElementById("vehicle-filter-owner");
+const vehicleOwnerFilterWrapper = document.getElementById(
+  "vehicle-filter-owner-wrapper"
+);
 
 let currentUser = null;
 let loginStage = "identifier";
@@ -110,6 +120,13 @@ const captchaState = {
   register: "469P",
   reset: "469P",
   account: "1234",
+};
+
+let currentVehicles = [];
+const vehicleFilters = {
+  search: "",
+  blacklist: "all",
+  owner: "",
 };
 
 const LICENSE_PATTERN = /^[A-Z0-9-]{1,7}$/;
@@ -513,7 +530,7 @@ function setSession(user) {
   if (user) {
     localStorage.setItem(
       STORAGE_KEYS.session,
-      JSON.stringify({ username: user.username })
+      JSON.stringify({ username: user.username, isAdmin: !!user.isAdmin })
     );
   } else {
     localStorage.removeItem(STORAGE_KEYS.session);
@@ -523,10 +540,15 @@ function setSession(user) {
 function getSession() {
   try {
     const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.session));
-    return data?.username || null;
+    if (!data || !data.username) return null;
+    return { username: data.username, isAdmin: !!data.isAdmin };
   } catch (error) {
     return null;
   }
+}
+
+function isAdminSession() {
+  return !!currentUser?.isAdmin;
 }
 
 async function fetchUserVehicles(username) {
@@ -536,7 +558,11 @@ async function fetchUserVehicles(username) {
   if (!res.ok) {
     throw new Error("Failed to fetch vehicles");
   }
-  return res.json();
+  const body = await res.json();
+  if (Array.isArray(body)) {
+    return body;
+  }
+  return body?.vehicles || [];
 }
 
 function showMessage(element, text, type = "") {
@@ -942,6 +968,7 @@ async function handleRegister(event) {
         username: lowerEmail,
         email: lowerEmail,
         password,
+        isAdmin: false,
         firstName,
         lastName,
         displayName,
@@ -1117,6 +1144,7 @@ async function handleLogin(event) {
     // Use the backend response to set currentUser + session
     const users = readUsers();
     const lower = (result.username || identifier).toLowerCase();
+    const isAdmin = !!result.admin;
     let user = users.find((u) => u.username === lower || u.email === lower);
 
     if (!user) {
@@ -1126,12 +1154,14 @@ async function handleLogin(event) {
         email: lower,
         displayName: result.displayName || lower,
       };
-      users.push(user);
-      saveUsers(users);
+      if (!isAdmin) {
+        users.push(user);
+        saveUsers(users);
+      }
     }
 
-    currentUser = user;
-    setSession(user);
+    currentUser = { ...user, isAdmin };
+    setSession(currentUser);
     loginForm.reset();
     setLoginStage("identifier");
     enterLicenseMode();
@@ -1147,6 +1177,7 @@ async function handleLogin(event) {
 
 function enterLicenseMode() {
   if (!currentUser) return;
+  setAdminBodyState(isAdminSession());
   authShell.classList.add("hidden");
   licenseSection.classList.remove("hidden");
   accountSection?.classList.add("hidden");
@@ -1154,6 +1185,8 @@ function enterLicenseMode() {
   setNavSignoutVisibility(true);
   licenseForm?.reset();
   populateVehicleSelects();
+  resetVehicleFiltersForSession();
+  renderVehiclesTableHeader(isAdminSession());
   const name =
     currentUser.displayName ||
     [currentUser.firstName, currentUser.lastName].filter(Boolean).join(" ") ||
@@ -1166,6 +1199,7 @@ function enterLicenseMode() {
 function exitLicenseMode() {
   currentUser = null;
   setSession(null);
+  setAdminBodyState(false);
   licenseSection.classList.add("hidden");
   accountSection?.classList.add("hidden");
   querySection?.classList.add("hidden");
@@ -1222,6 +1256,34 @@ function enterAccountMode() {
   generateCaptcha("account");
   showMessage(accountContactMessage, "");
   showMessage(accountPasswordMessage, "");
+
+  const admin = isAdminSession();
+  const contactElements = [
+    accountEmailInput,
+    accountPhoneCountrySelect,
+    accountPhoneInput,
+    accountCurrentPasswordInput,
+    accountContactForm?.querySelector("button[type='submit']"),
+  ];
+  contactElements.forEach((el) => {
+    if (el) el.disabled = admin;
+  });
+
+  const passwordElements = [
+    accountOldPasswordInput,
+    accountNewPasswordInput,
+    accountConfirmPasswordInput,
+    accountCaptchaInput,
+    accountPasswordForm?.querySelector("button[type='submit']"),
+    accountRefreshCaptchaButton,
+  ];
+  passwordElements.forEach((el) => {
+    if (el) el.disabled = admin;
+  });
+
+  if (accountDeleteButton) {
+    accountDeleteButton.disabled = admin;
+  }
 }
 
 function enterQueryMode() {
@@ -1380,6 +1442,15 @@ function handleAccountContactSubmit(event) {
     return;
   }
 
+  if (isAdminSession()) {
+    showMessage(
+      accountContactMessage,
+      "Admin contact information is managed in configuration.",
+      "error"
+    );
+    return;
+  }
+
   const email = accountEmailInput?.value.trim();
   const lowerEmail = (email || "").toLowerCase();
   const phoneCountry = accountPhoneCountrySelect?.value || "";
@@ -1449,12 +1520,21 @@ function handleAccountContactSubmit(event) {
   showMessage(accountContactMessage, "Contact information updated successfully.", "success");
 }
 
-function handleAccountPasswordSubmit(event) {
-  event.preventDefault();
-  if (!currentUser) {
-    showLoginView();
-    return;
-  }
+  function handleAccountPasswordSubmit(event) {
+    event.preventDefault();
+    if (!currentUser) {
+      showLoginView();
+      return;
+    }
+
+    if (isAdminSession()) {
+      showMessage(
+        accountPasswordMessage,
+        "Admin password can only be changed in backend configuration.",
+        "error"
+      );
+      return;
+    }
 
   const oldPassword = accountOldPasswordInput?.value || "";
   const newPassword = accountNewPasswordInput?.value || "";
@@ -1502,6 +1582,15 @@ function handleAccountDelete() {
     return;
   }
 
+  if (isAdminSession()) {
+    showMessage(
+      accountPasswordMessage,
+      "Admin account cannot be deleted from this UI.",
+      "error"
+    );
+    return;
+  }
+
   const confirmation = window.confirm(
     "Deleting your account will remove all data in this browser. This cannot be undone. Continue?"
   );
@@ -1526,10 +1615,111 @@ function handleAccountDelete() {
   showMessage(authMessage, "Your account has been deleted.", "success");
 }
 
+function setAdminBodyState(adminView) {
+  if (typeof document === "undefined" || !document.body) return;
+  document.body.classList.toggle("admin-logged-in", !!adminView);
+}
+
+function renderVehiclesTableHeader(adminView) {
+  if (!vehiclesTableHead) return;
+  vehiclesTableHead.innerHTML = "";
+
+  const columns = [
+    "License Plate",
+    "Manufacturer",
+    "Model",
+    "Year",
+    "Blacklist Status",
+  ];
+
+  if (adminView) {
+    columns.push("Owner Email", "Owner Phone");
+  }
+  columns.push("Actions");
+
+  const row = document.createElement("tr");
+  columns.forEach((heading) => {
+    const th = document.createElement("th");
+    th.scope = "col";
+    th.textContent = heading;
+    row.appendChild(th);
+  });
+  vehiclesTableHead.appendChild(row);
+
+  if (vehiclesTable) {
+    vehiclesTable.classList.toggle("vehicles-table--admin", adminView);
+  }
+
+  setAdminBodyState(adminView);
+
+  if (licenseListContainer) {
+    licenseListContainer.classList.toggle("admin-view", adminView);
+  }
+
+  if (!adminView) {
+    vehicleFilters.owner = "";
+    if (vehicleOwnerFilter) {
+      vehicleOwnerFilter.value = "";
+    }
+  }
+}
+
+function resetVehicleFiltersForSession() {
+  vehicleFilters.search = "";
+  vehicleFilters.blacklist = "all";
+  vehicleFilters.owner = "";
+
+  if (vehicleSearchInput) vehicleSearchInput.value = "";
+  if (vehicleBlacklistSelect) vehicleBlacklistSelect.value = "all";
+  if (vehicleOwnerFilter) vehicleOwnerFilter.value = "";
+}
+
+function applyRegisteredVehiclesFilters() {
+  const adminView = isAdminSession();
+  const search = (vehicleFilters.search || "").trim().toLowerCase();
+  const ownerQuery = adminView ? (vehicleFilters.owner || "").trim().toLowerCase() : "";
+  const blacklistFilter = vehicleFilters.blacklist || "all";
+
+  let filtered = currentVehicles.slice();
+
+  if (search) {
+    filtered = filtered.filter((item) => {
+      const license = (item.licenseNumber || "").toLowerCase();
+      const make = (item.make || "").toLowerCase();
+      const model = (item.model || "").toLowerCase();
+      const ownerEmail = (item.ownerEmail || item.ownerUsername || "").toLowerCase();
+      const ownerPhone = (item.ownerPhone || item.ownerPhoneCountry || "").toLowerCase();
+
+      return (
+        license.includes(search) ||
+        make.includes(search) ||
+        model.includes(search) ||
+        (adminView && (ownerEmail.includes(search) || ownerPhone.includes(search)))
+      );
+    });
+  }
+
+  if (adminView && ownerQuery) {
+    filtered = filtered.filter((item) => {
+      const ownerEmail = (item.ownerEmail || item.ownerUsername || "").toLowerCase();
+      const ownerPhone = (item.ownerPhone || item.ownerPhoneCountry || "").toLowerCase();
+      return ownerEmail.includes(ownerQuery) || ownerPhone.includes(ownerQuery);
+    });
+  }
+
+  if (blacklistFilter === "active") {
+    filtered = filtered.filter((item) => item.blacklisted);
+  } else if (blacklistFilter === "clear") {
+    filtered = filtered.filter((item) => !item.blacklisted);
+  }
+
+  renderRegisteredVehicles(filtered, adminView);
+}
+
 async function refreshLicenseList() {
   if (!currentUser) return;
   if (!vehiclesTableBody) return;
-  vehiclesTableBody.innerHTML = "";
+  renderVehiclesTableHeader(isAdminSession());
 
   try {
     const vehicles = await fetchUserVehicles(currentUser.username);
@@ -1537,17 +1727,22 @@ async function refreshLicenseList() {
     licenses[currentUser.username] = vehicles;
     saveLicenses(licenses);
 
-    renderVehicleRows(vehicles);
+    currentVehicles = vehicles;
+    applyRegisteredVehiclesFilters();
   } catch (error) {
     console.error("Failed to fetch vehicles from API", error);
     const fallbackLicenses = readLicenses();
     const userLicenses = fallbackLicenses[currentUser.username] || [];
-    renderVehicleRows(userLicenses);
+
+    currentVehicles = userLicenses;
+    applyRegisteredVehiclesFilters();
   }
 }
 
-function renderVehicleRows(vehicles) {
+function renderRegisteredVehicles(vehicles, adminView) {
   if (!vehiclesTableBody) return;
+  vehiclesTableBody.innerHTML = "";
+  const colCount = adminView ? 8 : 6;
   const sorted = [...vehicles].sort(
     (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
   );
@@ -1555,7 +1750,7 @@ function renderVehicleRows(vehicles) {
   if (sorted.length === 0) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 6;
+    cell.colSpan = colCount;
     cell.textContent = "No vehicles registered yet.";
     row.appendChild(cell);
     vehiclesTableBody.appendChild(row);
@@ -1565,26 +1760,41 @@ function renderVehicleRows(vehicles) {
   sorted.forEach((item) => {
     const row = document.createElement("tr");
     const status = item.blacklisted ? "Blacklisted" : "Not blacklisted";
+    const cells = [item.licenseNumber, item.make || "", item.model || "", item.year || "", status];
 
-    const cells = [
-      item.licenseNumber,
-      item.make || "",
-      item.model || "",
-      item.year || "",
-      status,
-    ];
+    if (adminView) {
+      cells.push(item.ownerEmail || item.ownerUsername || "");
+      cells.push(item.ownerPhone || item.ownerPhoneCountry || "");
+    }
 
-    cells.forEach((value) => {
+    cells.forEach((value, index) => {
       const cell = document.createElement("td");
       cell.textContent = value;
+      if (adminView && (index === 5 || index === 6)) {
+        cell.classList.add("owner-cell");
+      }
       row.appendChild(cell);
     });
 
     const actionCell = document.createElement("td");
-    const removeButton = document.createElement("button");
-    removeButton.textContent = "Remove";
-    removeButton.addEventListener("click", () => removeLicense(item.licenseNumber));
-    actionCell.appendChild(removeButton);
+    if (adminView) {
+      const toggleButton = document.createElement("button");
+      toggleButton.textContent = item.blacklisted ? "Remove from blacklist" : "Blacklist";
+      toggleButton.addEventListener("click", () =>
+        toggleBlacklist(item.licenseNumber, !item.blacklisted)
+      );
+      actionCell.appendChild(toggleButton);
+
+      const removeButton = document.createElement("button");
+      removeButton.textContent = "Remove";
+      removeButton.addEventListener("click", () => removeLicense(item.licenseNumber));
+      actionCell.appendChild(removeButton);
+    } else {
+      const removeButton = document.createElement("button");
+      removeButton.textContent = "Remove";
+      removeButton.addEventListener("click", () => removeLicense(item.licenseNumber));
+      actionCell.appendChild(removeButton);
+    }
     row.appendChild(actionCell);
 
     vehiclesTableBody.appendChild(row);
@@ -1593,7 +1803,6 @@ function renderVehicleRows(vehicles) {
 
 async function removeLicense(licenseNumber) {
   if (!currentUser) return;
-
   try {
     const res = await apiRequest("/vehicles", {
       method: "DELETE",
@@ -1617,6 +1826,39 @@ async function removeLicense(licenseNumber) {
     showMessage(
       licenseMessage,
       error?.message || "Unable to remove license plate.",
+      "error"
+    );
+  }
+}
+
+async function toggleBlacklist(licenseNumber, blacklisted) {
+  if (!currentUser || !isAdminSession()) return;
+
+  try {
+    const res = await apiRequest("/vehicles/blacklist", {
+      method: "POST",
+      body: JSON.stringify({
+        username: currentUser.username,
+        licenseNumber,
+        blacklisted,
+      }),
+    });
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body?.message || "Unable to update blacklist status.");
+    }
+
+    await refreshLicenseList();
+    const successMessage = blacklisted
+      ? "Vehicle blacklisted."
+      : "Vehicle removed from blacklist.";
+    showMessage(licenseMessage, successMessage, "success");
+  } catch (error) {
+    console.error(error);
+    showMessage(
+      licenseMessage,
+      error?.message || "Unable to update blacklist status.",
       "error"
     );
   }
@@ -1675,6 +1917,44 @@ registerForm.addEventListener("submit", handleRegister);
 loginForm.addEventListener("submit", handleLogin);
 resetForm?.addEventListener("submit", handleReset);
 licenseForm.addEventListener("submit", handleLicenseSubmit);
+
+vehicleSearchInput?.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    vehicleFilters.search = vehicleSearchInput.value || "";
+    applyRegisteredVehiclesFilters();
+  }
+
+  if (event.key === "Escape") {
+    vehicleSearchInput.value = "";
+    vehicleFilters.search = "";
+    applyRegisteredVehiclesFilters();
+  }
+});
+
+vehicleBlacklistSelect?.addEventListener("change", () => {
+  vehicleFilters.blacklist = vehicleBlacklistSelect.value || "all";
+  applyRegisteredVehiclesFilters();
+});
+
+vehicleOwnerFilter?.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    vehicleFilters.owner = vehicleOwnerFilter.value || "";
+    applyRegisteredVehiclesFilters();
+  }
+
+  if (event.key === "Escape") {
+    vehicleOwnerFilter.value = "";
+    vehicleFilters.owner = "";
+    applyRegisteredVehiclesFilters();
+  }
+});
+
+vehicleOwnerFilter?.addEventListener("input", () => {
+  vehicleFilters.owner = vehicleOwnerFilter.value || "";
+  applyRegisteredVehiclesFilters();
+});
 
 // My Vehicles
 navVehiclesLink?.addEventListener("click", (event) => {
@@ -1756,17 +2036,25 @@ document.addEventListener("DOMContentLoaded", () => {
   drawParallaxRingLogo();
   window.addEventListener("resize", drawParallaxRingLogo);
 
-  const username = getSession();
-  if (!username) {
+  const session = getSession();
+  if (!session || !session.username) {
     return;
   }
 
   const users = readUsers();
-  const user = users.find((item) => item.username === username);
+  const user = users.find((item) => item.username === session.username);
   if (user) {
-    currentUser = user;
+    currentUser = { ...user, isAdmin: !!session.isAdmin };
     enterLicenseMode();
-  } else {
-    setSession(null);
+    return;
   }
+
+  // Allow restoring admin session even if not persisted locally
+  currentUser = {
+    username: session.username,
+    email: session.username,
+    displayName: session.username,
+    isAdmin: !!session.isAdmin,
+  };
+  enterLicenseMode();
 });
