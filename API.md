@@ -1,354 +1,447 @@
-# Parallax API
+# Parallax Backend API Documentation
 
-This document describes the HTTP API used by the Parallax front-end for authentication and vehicle management.
+**Version:** Demo / Development  
+**Status:** Stable (HTTP contracts), internal persistence may evolve (SQLite planned)
 
-The API is intentionally minimal and implemented using a pure Java `HttpServer` with in-memory repositories. SQLite integration will be plugged in later behind the same interfaces.
-
----
-
-## 1. Base URL & Configuration
-
-The front-end reads the base URL from `config.js`:
-
-```js
-window.APP_CONFIG = {
-  API_BASE: "http://localhost:8080/api"
-};
-```
-
-All endpoints documented below are relative to `API_BASE`.
-
-For example, a `POST /auth/login` request from the browser goes to:
-```
-http://localhost:8080/api/auth/login
-```
+This document defines the REST-style API exposed by the Parallax Java backend.  
+All APIs return JSON.  
+All dates and times are server-local unless otherwise noted.
 
 ---
 
-## 2. Health
+## 1. Overview
 
-### GET /health
+The backend exposes endpoints for:
 
-Simple liveness endpoint for monitoring and local testing.
+- **Authentication & Accounts**
+- **Vehicle Management**
+- **Blacklist Management (admin only)**
+- **Query**
+- **System Health**
 
-**Response**
+The system is currently **stateless**:  
+The front-end includes a header such as:
 
-- `200 OK` – server is up.
-- The body may be a small JSON object or plain text depending on the implementation.
+```
+X-User: <username>
+```
 
-Use this endpoint to check that the backend is running before exercising other APIs.
+to indicate the authenticated user.  
+In production, this will be replaced with secure sessions (JWT or server-side tokens).
+
+Admin account is configured statically in `AppConfig`.
 
 ---
 
-## 3. Authentication
+## 2. Authentication & Accounts
 
-### 3.1 Login
+### 2.1 Register
 
-**POST /auth/login**
+**`POST /auth/register`**
 
-Used by the sign-in form. Session is still managed client-side (`localStorage`), so the backend only validates credentials and returns a summary of the user.
+Create a new user account.
 
-**Request body (JSON)**
-
-```json
-{
-  "identifier": "user@example.com or phone number",
-  "password": "PlainTextPassword"
-}
-```
-
-`identifier` may be:
-- the account email address, or
-- the stored username, or
-- a phone number (digits only or country code + digits), depending on how the repository is implemented.
-
-`password` is the user's current password.
-
-**Successful response**
-
-```
-200 OK
-Content-Type: application/json
-```
+**Request Body**
 
 ```json
 {
-  "success": true,
-  "message": "OK",
-  "username": "user@example.com",
-  "displayName": "First Last"
-}
-```
-
-The front-end stores `username` in `localStorage.ft_session` and uses it to associate vehicles with the current user.
-
-**Error responses (examples)**
-
-- `400 Bad Request` - Invalid JSON or missing required fields.
-- `401 Unauthorized`
-
-```json
-{
-  "success": false,
-  "message": "INVALID_CREDENTIALS"
-}
-```
-
-### 3.2 Register
-
-**POST /auth/register**
-
-Creates a new user account. For now, users are stored in an in-memory `UserRepository`; later this will be replaced with SQLite.
-
-**Request body (JSON)**
-
-```json
-{
-  "email": "user@example.com",
-  "password": "PlainTextPassword",
-  "firstName": "First",
-  "lastName": "Last",
   "country": "CA",
-  "birthMonth": "05",
-  "birthDay": "12",
-  "birthYear": "1999",
+  "firstName": "Liam",
+  "lastName": "Frost",
+  "birthMonth": 1,
+  "birthDay": 15,
+  "birthYear": 2003,
+  "email": "liam@example.com",
+  "password": "Secret123",
   "phoneCountry": "+1",
   "phone": "6041234567",
   "contactMethod": "text"
 }
 ```
 
-**Notes:**
-- `email` will also be used as username.
-- `phoneCountry` is a dial code such as `+1`, `+86`, etc.
-- `phone` should contain only digits (the front-end already strips non-digits).
+**Response**
 
-**Successful response**
+```json
+{ "success": true }
+```
 
+**Errors:**
+
+- `400` missing/invalid fields
+- `409` account already exists
+
+---
+
+### 2.2 Login
+
+**`POST /auth/login`**
+
+Authenticates the user.
+
+**Request Body**
+
+```json
+{
+  "username": "liam@example.com",
+  "password": "Secret123"
+}
 ```
-201 Created
-Content-Type: application/json
-```
+
+**Response**
 
 ```json
 {
   "success": true,
-  "message": "CREATED"
+  "username": "liam@example.com"
 }
 ```
-
-The front-end then:
-- Keeps its own local representation of the user for legacy flows, and
-- Immediately transitions to the My Vehicles page.
-
-**Error responses**
-
-- `409 Conflict`
-
-```json
-{
-  "success": false,
-  "message": "EMAIL_EXISTS"
-}
-```
-
-Occurs when a user with the same email is already registered.
-
-Other validation failures may be returned as `400 Bad Request` with an appropriate message code.
 
 ---
 
-## 4. Vehicles
+### 2.3 Get Current User Info
 
-All vehicle APIs associate records with a username (the email).
+**`GET /account/me`**
 
-### 4.1 List vehicles
-
-**GET /vehicles**
-
-Returns all vehicles registered by a specific user.
-
-**Query parameters**
-
-- `username` (required) – the account identifier, typically the email.
-
-**Example:**
+**Requires:**
 
 ```
-GET /api/vehicles?username=user@example.com
+X-User: <username>
 ```
 
-**Successful response**
-
-```
-200 OK
-Content-Type: application/json
-```
-
-```json
-[
-  {
-    "username": "user@example.com",
-    "licenseNumber": "ABC1234",
-    "make": "Toyota",
-    "model": "Corolla",
-    "year": "2020",
-    "blacklisted": false,
-    "createdAt": "2025-11-26T19:30:12Z"
-  }
-]
-```
-
-If the user has no vehicles, an empty array `[]` is returned.
-
-**Possible errors**
-
-- `400 Bad Request` - Missing username parameter.
-- `500 Internal Server Error` - Unexpected server-side failure.
-
-### 4.2 Add a vehicle
-
-**POST /vehicles**
-
-Registers a new vehicle for the current user.
-
-**Request body (JSON)**
+**Response Example**
 
 ```json
 {
-  "username": "user@example.com",
+  "country": "CA",
+  "firstName": "Liam",
+  "lastName": "Frost",
+  "birthMonth": 1,
+  "birthDay": 15,
+  "birthYear": 2003,
+  "email": "liam@example.com",
+  "phoneCountry": "+1",
+  "phone": "6041234567",
+  "contactMethod": "text"
+}
+```
+
+---
+
+### 2.4 Update Contact Info
+
+**`PUT /account/contact`**
+
+**Requires:**
+
+```
+X-User: <username>
+```
+
+**Request Body**
+
+```json
+{
+  "email": "new@example.com",
+  "phoneCountry": "+1",
+  "phone": "7781239876",
+  "currentPassword": "Secret123"
+}
+```
+
+**Response**
+
+```json
+{ "success": true }
+```
+
+---
+
+### 2.5 Change Password
+
+**`PUT /account/password`**
+
+**Request Body**
+
+```json
+{
+  "oldPassword": "Secret123",
+  "newPassword": "NewPass456",
+  "captcha": "ABCD"
+}
+```
+
+**Response**
+
+```json
+{ "success": true }
+```
+
+---
+
+### 2.6 Delete Account
+
+**`DELETE /account`**
+
+Admin account cannot be deleted.
+
+**Response**
+
+```json
+{ "success": true }
+```
+
+---
+
+## 3. Vehicles
+
+All vehicle endpoints require:
+
+```
+X-User: <username>
+```
+
+Admins may list **all** vehicles.
+
+---
+
+### 3.1 List Vehicles
+
+**`GET /vehicles`**
+
+**Response Example:**
+
+```json
+{
+  "vehicles": [
+    {
+      "licenseNumber": "ABC1234",
+      "make": "Toyota",
+      "model": "Corolla",
+      "year": 2020,
+      "blacklisted": false,
+      "owner": "liam@example.com",
+      "phoneCountry": "+1",
+      "phone": "6041234567"
+    }
+  ]
+}
+```
+
+Admin sees all vehicles; regular users only see their own.
+
+---
+
+### 3.2 Add Vehicle
+
+**`POST /vehicles`**
+
+**Request Body**
+
+```json
+{
   "licenseNumber": "ABC1234",
   "make": "Toyota",
   "model": "Corolla",
-  "year": "2020"
+  "year": 2020
 }
 ```
 
-**Notes:**
-- `licenseNumber` must be 1–7 chars, using A–Z, digits, or `-`.
-- The front-end validates this before sending.
-- `blacklisted` is implicitly set to `false` on creation.
-- `createdAt` is generated by the server.
+**Response**
 
-**Successful response**
+```json
+{ "success": true }
+```
 
-```
-201 Created
-Content-Type: application/json
-```
+---
+
+### 3.3 Delete Vehicle
+
+**`DELETE /vehicles`**
+
+**Request Body**
 
 ```json
 {
-  "username": "user@example.com",
-  "licenseNumber": "ABC1234",
-  "make": "Toyota",
-  "model": "Corolla",
-  "year": "2020",
-  "blacklisted": false,
-  "createdAt": "2025-11-26T19:30:12Z"
-}
-```
-
-The front-end refreshes the table using `GET /vehicles` afterwards.
-
-**Error responses**
-
-- `409 Conflict`
-
-```json
-{
-  "message": "LICENSE_EXISTS"
-}
-```
-
-A vehicle with the same `licenseNumber` already exists for this user.
-
-- `400 Bad Request` - Missing or invalid input fields.
-
-### 4.3 Remove a vehicle
-
-**DELETE /vehicles**
-
-Deletes a specific vehicle owned by the user.
-
-**Request body (JSON)**
-
-```json
-{
-  "username": "user@example.com",
   "licenseNumber": "ABC1234"
 }
 ```
 
-**Successful response**
+**Response**
+
+```json
+{ "success": true }
+```
+
+---
+
+## 4. Blacklist (Admin Only)
+
+Admin credentials are configured in `AppConfig`.
+
+Admin-only endpoints require:
 
 ```
-204 No Content
+X-User: <admin-email>
 ```
 
-No body is returned.
+---
 
-The front-end then re-fetches the list with `GET /vehicles`.
+### 4.1 Update Blacklist Status
 
-**Error responses**
+**`POST /vehicles/blacklist`**
 
-- `404 Not Found`
+**Request Body**
 
 ```json
 {
-  "message": "NOT_FOUND"
+  "username": "liam@example.com",
+  "licenseNumber": "ABC1234",
+  "blacklisted": true
 }
 ```
 
-No matching vehicle for this username and license number.
+**Response**
 
-- `400 Bad Request` - Invalid or missing fields.
-
----
-
-## 5. Data Models (Summary)
-
-### User
-
-```java
-class User {
-  String username;      // same as email
-  String email;
-  String password;      // plain text for demo only (will be hashed later)
-  String firstName;
-  String lastName;
-  String country;
-  String birthMonth;
-  String birthDay;
-  String birthYear;
-  String phoneCountry;
-  String phone;
-  String contactMethod;
-}
-```
-
-### Vehicle
-
-```java
-class Vehicle {
-  String username;
-  String licenseNumber;
-  String make;
-  String model;
-  String year;
-  boolean blacklisted;
-  String createdAt;
+```json
+{
+  "success": true,
+  "vehicle": {
+    "licenseNumber": "ABC1234",
+    "blacklisted": true
+  }
 }
 ```
 
 ---
 
-## 6. Notes for Future SQLite Integration
+## 5. Query
 
-- `UserRepository` and `VehicleRepository` currently use in-memory collections (`ConcurrentHashMap`, `List`, etc.).
-- Each method is structured so it can be replaced by an SQL query without changing the HTTP handlers.
+### 5.1 Text Query (Public or Authenticated)
 
-When SQLite is introduced:
-- Keep the same method signatures.
-- Replace in-memory lookups with `SELECT` / `INSERT` / `DELETE` statements.
-- Ensure unique constraints on `users.email` and `(vehicles.username, vehicles.licenseNumber)`.
+**`GET /vehicles/query?license=ABC1234`**
+
+**Response if found**
+
+```json
+{
+  "found": true,
+  "licenseNumber": "ABC1234",
+  "blacklisted": false
+}
+```
+
+**Response if not found**
+
+```json
+{
+  "found": false
+}
+```
+
+No owner or personal information is returned.
+
+---
+
+### 5.2 Image Recognition Query (Java → Python Service)
+
+**`POST /vehicles/query/image`**
+
+Form-data request:
+
+```
+file: <uploaded image>
+```
+
+**Java Backend Steps**
+
+1. Receives image upload
+
+2. Forwards to Python service:
+
+   ```
+   POST http://python-service/recognize
+   ```
+   
+   with image bytes
+
+3. Python returns:
+
+   ```json
+   { "plate": "ABC1234" }
+   ```
+
+4. Java performs the same blacklist lookup as text query
+
+5. Java returns:
+
+**Response**
+
+```json
+{
+  "plate": "ABC1234",
+  "blacklisted": true
+}
+```
+
+**Errors:**
+
+- `400` no plate detected
+- `502` Python service unreachable
+
+---
+
+## 6. Health Check
+
+**`GET /api/health`**
+
+**Response**
+
+```json
+{ "status": "ok" }
+```
+
+---
+
+## 7. Error Format (Standard)
+
+All errors follow:
+
+```json
+{
+  "success": false,
+  "error": "MESSAGE"
+}
+```
+
+**Status codes:**
+
+- `400` invalid request
+- `401` not authenticated
+- `403` not authorized
+- `404` not found
+- `409` conflict (e.g., duplicate registration)
+- `500` internal error
+- `502` upstream error (Python recognition service)
+
+---
+
+## 8. Future Backward-Compatible Expansions
+
+- SQLite-based repositories (`SQLiteUserRepository`, `SQLiteVehicleRepository`)
+  - No API changes required; only internal swap.
+- JWT authentication
+- Admin audit logs
+- Batch query / statistics endpoints
+- Multi-tenant environment support
+
+---
+
+## 9. Versioning Strategy
+
+On stabilization, routes will move to:
+
+```
+/api/v1/<...>
+```
+
+Backward compatibility will be preserved for existing clients.
