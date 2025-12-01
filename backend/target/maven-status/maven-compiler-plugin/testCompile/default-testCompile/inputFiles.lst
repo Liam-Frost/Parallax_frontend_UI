@@ -1,0 +1,10 @@
+C:\Dev\WEB\HTML\Parallax\backend\src\test\java\parallax\backend\db\InMemoryUserRepositoryTest.java
+C:\Dev\WEB\HTML\Parallax\backend\src\test\java\parallax\backend\db\InMemoryVehicleRepositoryTest.java
+C:\Dev\WEB\HTML\Parallax\backend\src\test\java\parallax\backend\http\AccountHandlerTest.java
+C:\Dev\WEB\HTML\Parallax\backend\src\test\java\parallax\backend\http\AuthLoginHandlerTest.java
+C:\Dev\WEB\HTML\Parallax\backend\src\test\java\parallax\backend\http\AuthRegisterHandlerTest.java
+C:\Dev\WEB\HTML\Parallax\backend\src\test\java\parallax\backend\http\HealthHandlerTest.java
+C:\Dev\WEB\HTML\Parallax\backend\src\test\java\parallax\backend\http\HttpServerAppIntegrationTest.java
+C:\Dev\WEB\HTML\Parallax\backend\src\test\java\parallax\backend\http\PlateImageQueryHandlerTest.java
+C:\Dev\WEB\HTML\Parallax\backend\src\test\java\parallax\backend\http\TestHttpExchange.java
+C:\Dev\WEB\HTML\Parallax\backend\src\test\java\parallax\backend\http\VehiclesHandlerTest.java

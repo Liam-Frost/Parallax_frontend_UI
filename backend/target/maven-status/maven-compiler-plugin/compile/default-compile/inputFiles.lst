@@ -1,5 +1,7 @@
 C:\Dev\WEB\HTML\Parallax\backend\src\main\java\parallax\backend\config\AppConfig.java
 C:\Dev\WEB\HTML\Parallax\backend\src\main\java\parallax\backend\db\DataSource.java
+C:\Dev\WEB\HTML\Parallax\backend\src\main\java\parallax\backend\db\InMemoryUserRepository.java
+C:\Dev\WEB\HTML\Parallax\backend\src\main\java\parallax\backend\db\InMemoryVehicleRepository.java
 C:\Dev\WEB\HTML\Parallax\backend\src\main\java\parallax\backend\db\UserRepository.java
 C:\Dev\WEB\HTML\Parallax\backend\src\main\java\parallax\backend\db\VehicleRepository.java
 C:\Dev\WEB\HTML\Parallax\backend\src\main\java\parallax\backend\http\AccountHandler.java

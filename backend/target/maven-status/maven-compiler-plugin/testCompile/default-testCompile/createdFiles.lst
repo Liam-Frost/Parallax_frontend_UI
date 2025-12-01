@@ -1,0 +1,12 @@
+parallax\backend\http\AuthLoginHandlerTest.class
+parallax\backend\http\HttpServerAppIntegrationTest$TestConfig.class
+parallax\backend\http\TestHttpExchange.class
+parallax\backend\db\InMemoryUserRepositoryTest.class
+parallax\backend\db\InMemoryVehicleRepositoryTest.class
+parallax\backend\http\AuthRegisterHandlerTest.class
+parallax\backend\http\PlateImageQueryHandlerTest.class
+parallax\backend\http\VehiclesHandlerTest.class
+parallax\backend\http\HttpServerAppIntegrationTest.class
+parallax\backend\http\AccountHandlerTest.class
+parallax\backend\http\PlateImageQueryHandlerTest$StubPlateImageQueryHandler.class
+parallax\backend\http\HealthHandlerTest.class

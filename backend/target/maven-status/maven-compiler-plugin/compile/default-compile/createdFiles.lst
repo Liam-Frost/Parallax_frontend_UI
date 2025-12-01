@@ -8,6 +8,7 @@ parallax\backend\http\AuthLoginHandler.class
 parallax\backend\db\VehicleRepository.class
 parallax\backend\http\HealthHandler.class
 parallax\backend\http\AccountHandler$ContactUpdateRequest.class
+parallax\backend\db\InMemoryUserRepository.class
 parallax\backend\http\VehiclesHandler.class
 parallax\backend\model\RegisterResponse.class
 parallax\backend\model\LoginResponse.class
@@ -19,3 +20,4 @@ parallax\backend\model\Vehicle.class
 parallax\backend\model\User.class
 parallax\backend\model\VehicleWithOwner.class
 parallax\backend\model\RegisterRequest.class
+parallax\backend\db\InMemoryVehicleRepository.class

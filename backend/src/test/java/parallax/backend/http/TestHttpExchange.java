@@ -1,5 +1,6 @@
 package parallax.backend.http;
 
+import com.sun.net.httpserver.HttpPrincipal;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
@@ -31,10 +32,6 @@ public class TestHttpExchange extends HttpExchange {
         this.uri = uri;
         this.requestHeaders = headers == null ? new Headers() : headers;
         this.requestBody = new ByteArrayInputStream(body == null ? new byte[0] : body);
-    }
-
-    public int getResponseCode() {
-        return responseCode;
     }
 
     public byte[] getResponseBodyBytes() {
