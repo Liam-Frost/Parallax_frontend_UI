@@ -1530,6 +1530,7 @@ async function handleQueryImageSubmit(event) {
     });
 
     const data = await response.json().catch(() => null);
+
     if (!response.ok || !data?.success) {
       showMessage(
         queryImageResult,
@@ -1540,13 +1541,24 @@ async function handleQueryImageSubmit(event) {
       return;
     }
 
+    if (!data.plateFound) {
+      showMessage(
+        queryImageResult,
+        data?.message || "No readable license plate was found in the image.",
+        "error"
+      );
+      return;
+    }
+
     const plate = (data.licenseNumber || "").toUpperCase();
     const plateTag = `<span class="plate-code">${plate}</span>`;
-    
+
     let confidenceText = "";
     if (typeof data.confidence === "number") {
-      const pct = (data.confidence * 100).toFixed(1); // 0.9321 -> 93.2
-      confidenceText = ` (confidence ${pct}%)`;
+      const raw = data.confidence;
+      const value = raw > 1 ? raw : raw * 100;
+      const pct = value.toFixed(1);
+      confidenceText = ` ( confidence <span class="plate-code">${pct}%</span> ) `;
     }
 
     if (!data.foundInSystem) {
@@ -1581,6 +1593,7 @@ async function handleQueryImageSubmit(event) {
     );
   }
 }
+
 
 function handleAccountContactSubmit(event) {
   event.preventDefault();
