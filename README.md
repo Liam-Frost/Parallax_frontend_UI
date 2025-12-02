@@ -1,4 +1,4 @@
-# Parallax Parking Demo
+# Parallax Parking Management System
 
 A small, end-to-end demo system for managing vehicle registrations and blacklist checks for a campus / facility parking environment.
 
@@ -267,7 +267,7 @@ The front-end can consume the backend base URL either:
 
 ## 7. API Overview (Simplified)
 
-Actual paths may differ; this section describes the intended shape.
+Actual paths may differ; this section describes the intended shape. Please see API.md for further information.
 
 ### 7.1 Authentication & Account
 
@@ -350,21 +350,103 @@ Recommended workflow:
 
 ---
 
-## 9. Roadmap
+## 9. Web Live Demo
 
-Planned enhancements:
-
-- Full SQLite persistence.
-- Proper password hashing and secure credential storage.
-- Fine-grained authorization (user vs admin capabilities).
-- Production-ready deployment (reverse proxy via Nginx, HTTPS, environment-based config).
-- i18n support (localization of UI text and region lists).
-- Extended reporting for admin (stats, usage, blacklist history).
+1. **URL**: https://parallax.twilightfrosty.com  
+2. **Admin Email**: admin@parallax.local  
+3. **Admin Password**: Admin1234!
 
 ---
 
-## 10. License
+### Live Demo Deployment Features
 
-This project is currently distributed as a demo.
+* **Production-grade Frontend Delivery (Nginx + HTTPS)**
 
-Add your chosen license here (e.g. MIT, Apache-2.0) once finalized.
+  * Static SPA served via Nginx on a dedicated frontend VPS
+  * Full HTTPS enabled using Cloudflare SSL/TLS
+  * Global CDN acceleration for minimal latency and improved caching efficiency
+
+* **Multi-Node Distributed Deployment**
+
+  * **Frontend**, **Java Backend API**, and **Python OCR Microservice** deployed on **three independent VPS nodes**
+  * Clear separation of concerns for scalability, security, and maintenance
+
+* **Cloudflare CDN + Reverse Proxy Integration**
+
+  * Automatic routing, caching, DDoS mitigation, and WAF protection
+  * Domain-based traffic entry point → proxied to backend layers
+
+* **Backend API (Java)**
+
+  * Exposed via its own endpoint, reverse-proxied through Cloudflare
+  * Supports horizontal scaling and planned load balancing in future releases
+
+* **Python OCR Recognition Microservice**
+
+  * Runs independently as a lightweight HTTP module for YOLO + OCR tasks
+  * Can be replicated horizontally for parallel image processing
+  * Provides stable REST contract for backend consumption
+
+* **Future-Ready Architecture**
+
+  * Designed to support load balancing and autoscaling
+  * Service-oriented architecture enables independent deployment and versioning
+  * Easy migration toward containerized environments (Docker / Kubernetes)
+
+* **Operational Reliability**
+
+  * All components managed via systemd on Debian VPS nodes
+  * Automatic restart, crash recovery, and service isolation
+  * Logs separated per service for clean observability
+
+---
+
+## 10. Roadmap
+
+Planned enhancements include improvements across persistence, security, architecture, deployment, and user experience.
+
+### Core Platform Improvements
+
+* Full SQLite → PostgreSQL migration for robust persistence.
+* Proper password hashing and secure credential storage.
+* Fine-grained authorization (role-based: user vs admin).
+* Comprehensive audit logging and extended reporting (stats, usage, blacklist history).
+* Enhanced inter-service communication security (tokens, signatures, or mTLS).
+
+### Frontend Evolution
+
+* Complete frontend rebuild using **React** (SPA architecture).
+* Full i18n support for UI text and region lists.
+* Dedicated **Admin Panel** and **User Panel** separated by routing and RBAC.
+* Improved UX flows, responsive layout, and accessibility standards.
+
+### Backend Architecture Enhancements
+
+* Backend refactor using **Spring Boot** for enterprise-level capabilities.
+* Introduction of an API gateway or reverse-proxy routing layer.
+* Support for **backend load balancing** and horizontal scaling.
+* Environment-based configuration for production deployment.
+
+### Infrastructure & Deployment
+
+* Production-ready deployment with Nginx (reverse proxy), HTTPS, Cloudflare CDN.
+* Migration to **PostgreSQL** as the primary relational database.
+* Full Docker support for all components (frontend, backend, OCR microservice).
+* Optional orchestration compatibility (Docker Compose → Kubernetes).
+
+### Microservices & System Design
+
+* Strengthened isolation between services (Java backend / OCR microservice).
+* Define formal REST contracts + versioned APIs.
+* Expand Python OCR microservice for multi-region or multi-model support.
+* Improve monitoring and health checks for each service.
+
+---
+
+## 11. License
+
+This project is licensed under the **MIT License**.
+
+You are free to use, modify, distribute, and integrate the code in both personal and commercial projects, as long as the original copyright notice is retained.
+
+See the [LICENSE](./LICENSE) file for full license text.
