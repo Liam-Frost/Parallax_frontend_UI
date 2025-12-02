@@ -43,12 +43,13 @@ a.link:focus {
 .apple-nav {
   max-width: 980px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 24px;
   padding: 0 24px;
   height: 44px;
+
+  display: flex;
+  align-items: center;
+  position: relative;
+
   font-size: 12px;
   letter-spacing: 0.02em;
 }
@@ -75,12 +76,16 @@ a.link:focus {
   list-style: none;
   margin: 0;
   padding: 0;
+
   display: flex;
-  justify-content: center;
   gap: 24px;
+
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
   color: rgba(29, 29, 31, 0.8);
 }
-
 .nav-links a {
   text-decoration: none;
   color: inherit;
@@ -126,7 +131,7 @@ main {
   border-radius: 22px;
   border: 1px solid rgba(210, 210, 215, 0.7);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-  padding: 40px 48px 0px;
+  padding: 40px 48px 30px;
   width: 100%;
   max-width: 480px;
   display: flex;
@@ -644,18 +649,83 @@ main {
   font-size: 14px;
 }
 
+/* ===== Global pill messages ===== */
+
 .message {
-  min-height: 20px;
-  font-size: 14px;
-  color: rgba(29, 29, 31, 0.7);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 9px;
+  font-size: 13px;
+  line-height: 1.3;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #1d1d1f;
+  min-height: 0;
+  margin: 0px;
 }
 
-.message.success {
-  color: #007a33;
+.message.message--empty {
+  padding: 0;
+  border: none;
+  background: none;
+  min-height: 20px; 
 }
 
-.message.error {
-  color: #d70015;
+.message.message--info {
+  background: #f2f2f7;
+  border-color: rgba(60, 60, 67, 0.18);
+  color: rgba(29, 29, 31, 0.9);
+}
+
+.message.message--pending {
+  background: #eef1ff;
+  border-color: rgba(53, 88, 255, 0.25);
+  color: #1f3dd9;
+}
+
+.message.message--success {
+  background: #e9f7ef;
+  border-color: rgba(18, 128, 92, 0.3);
+  color: #117a4d;
+}
+
+.message.message--error {
+  background: #fdeaea;
+  border-color: rgba(215, 0, 21, 0.25);
+  color: #b50b1b;
+}
+
+.message.message--blacklisted {
+  background: #fff0f2;
+  border-color: rgba(180, 0, 40, 0.35);
+  color: #a0002a;
+}
+
+.message__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.message__icon svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.message__text {
+  display: inline;
+}
+
+.plate-code {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Mono", monospace;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 0.1rem 0.35rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .support-box {
@@ -871,17 +941,85 @@ main {
   border-bottom: none;
 }
 
-.vehicles-table button {
-  border: none;
-  background: none;
-  color: #d70015;
-  font-weight: 600;
-  cursor: pointer;
+.vehicles-table th:last-child,
+.vehicles-table td:last-child {
+  min-width: 80px;
 }
+
+.vehicles-actions-cell {
+  text-align: center;
+}
+
+.vehicles-actions {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  justify-content: center;
+}
+
+.table-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 9px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease;
+}
+
+.table-action-button--danger {
+  color: #b3261e;
+  background: #fff5f4;
+  border-color: #f4c7c3;
+}
+
+.table-action-button--danger:hover {
+  background: #ffe2df;
+  border-color: #e08c86;
+  box-shadow: 0 0 0 1px rgba(179, 38, 30, 0.08);
+}
+
+.table-action-button--secondary {
+  color: #0b6b34;
+  background: #e9f6ee;
+  border-color: #c3e7d2;
+}
+
+.table-action-button--secondary:hover {
+  background: #d3eddc;
+  border-color: #8fcea8;
+  box-shadow: 0 0 0 1px rgba(11, 107, 52, 0.08);
+}
+
+.table-action-button--ghost {
+  color: #444;
+  background: #ffffff;
+}
+
+.table-action-button--ghost:hover {
+  background: #f5f5f7;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.table-action-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.45);
+}
+
 
 .global-footer {
   border-top: 1px solid rgba(210, 210, 215, 0.6);
-  padding: 18px;
+  padding: 10px 10px 0px 10px;
   background: rgba(255, 255, 255, 0.82);
   text-align: center;
   font-size: 12px;
@@ -946,6 +1084,20 @@ main {
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
 }
 
+.status-pill--success .plate-code {
+  background: #ecfdf3;
+  border-color: #a3e1b8;
+}
+
+.status-pill--error .plate-code {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.status-pill--blacklisted .plate-code {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
 
 @media (max-width: 900px) {
   .nav-links {
@@ -953,7 +1105,6 @@ main {
   }
 
   .apple-nav {
-    grid-template-columns: auto auto;
     justify-content: space-between;
   }
 
@@ -1000,4 +1151,5 @@ main {
   .signin-heading {
     font-size: 32px;
   }
+
 }
