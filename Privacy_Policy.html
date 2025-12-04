@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Parallax Privacy Policy</title>
+  <link rel="icon" type="image/png" href="resource/img/Logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    /* Basic reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        system-ui, -system-ui, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f5f5f7;
+      color: #1d1d1f;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      padding: 40px 16px 80px;
+    }
+
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+      padding: 48px 56px 56px;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 24px 12px 40px;
+      }
+      .page {
+        padding: 32px 20px 40px;
+        border-radius: 14px;
+      }
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #6e6e73;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: center;
+      font-size: 13px;
+      color: #6e6e73;
+      margin-top: 12px;
+    }
+
+    .meta-row span + span::before {
+      content: "•";
+      margin: 0 8px;
+      color: #d2d2d7;
+    }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid #e5e5ea;
+      margin: 24px 0 32px;
+    }
+
+    .section {
+      margin-bottom: 28px;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .section h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .section h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 10px 0 6px;
+    }
+
+    .section p {
+      margin-bottom: 10px;
+      color: #1d1d1f;
+    }
+
+    .section ul {
+      margin: 8px 0 8px 20px;
+      padding-left: 4px;
+    }
+
+    .section li {
+      margin-bottom: 4px;
+    }
+
+    strong {
+      font-weight: 600;
+    }
+
+    .small-note {
+      font-size: 13px;
+      color: #6e6e73;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <header class="page-header">
+      <h1 class="page-title">Parallax Privacy Policy</h1>
+      <div class="page-subtitle">Privacy Information</div>
+      <div class="meta-row">
+        <span>Last Updated: 2025</span>
+      </div>
+    </header>
+
+    <hr class="divider" />
+
+    <section class="section">
+      <p>
+        This Privacy Policy explains how the Parallax project (“we”, “us”, “our”)
+        collects, uses, stores, and protects information when you use the Parallax
+        web application (the “Site”). Parallax is an academic and experimental
+        software project. All data processing is performed solely for demonstration
+        and educational purposes.
+      </p>
+      <p>
+        By using the Site, you agree to the practices described in this Privacy Policy.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>1. Information We Collect</h2>
+
+      <h3>1.1 Information You Provide</h3>
+      <p>
+        We collect information you voluntarily submit when creating or using an
+        account, including:
+      </p>
+      <ul>
+        <li>Email address</li>
+        <li>Phone number</li>
+        <li>Password (stored securely using hashing)</li>
+        <li>Registered vehicles (license plate number, manufacturer, model, year)</li>
+      </ul>
+
+      <h3>1.2 Uploaded Images</h3>
+      <p>
+        If you use the image-recognition feature, you may upload photographs of
+        vehicles or license plates. Uploaded images are:
+      </p>
+      <ul>
+        <li>processed only for plate recognition,</li>
+        <li>transmitted to a Python OCR microservice,</li>
+        <li>not used to identify individuals,</li>
+        <li>not shared externally,</li>
+        <li>not used for training AI models.</li>
+      </ul>
+      <p>
+        Images are discarded after processing unless explicitly needed for debugging
+        (rare and only with user consent).
+      </p>
+
+      <h3>1.3 Automatically Collected Technical Data</h3>
+      <p>
+        When you access the Site, certain information may be collected automatically,
+        including:
+      </p>
+      <ul>
+        <li>Browser type and settings</li>
+        <li>Device type</li>
+        <li>IP address</li>
+        <li>Access times and pages viewed</li>
+        <li>Error logs</li>
+      </ul>
+      <p>
+        This information is used for security, diagnostics, and service improvement.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>2. How We Use Your Information</h2>
+      <p>
+        We use collected data only for the functional operation of the Site, including:
+      </p>
+      <ul>
+        <li>Creating and verifying accounts</li>
+        <li>Registering and displaying your vehicles</li>
+        <li>Checking vehicle blacklist status</li>
+        <li>Performing license plate recognition</li>
+        <li>Securing the Site against abuse</li>
+        <li>Debugging and improving system reliability</li>
+      </ul>
+      <p>
+        We <strong>do not</strong> use your information for advertising, profiling,
+        or commercial activities.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>3. How We Store and Protect Data</h2>
+      <ul>
+        <li>Passwords are stored using secure cryptographic hashing.</li>
+        <li>
+          Vehicle and account data is stored either in in-memory repositories or
+          SQLite, depending on configuration.
+        </li>
+        <li>
+          Communication between frontend, backend, and OCR service may be encrypted
+          depending on deployment environment.
+        </li>
+        <li>Only authorized project developers have access to server environments.</li>
+        <li>
+          OCR images are not permanently stored unless manually saved for debugging
+          with prior notice.
+        </li>
+      </ul>
+      <p>
+        Despite these measures, no system can guarantee complete security. You
+        acknowledge that Internet transmissions may not be fully secure.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>4. Sharing of Information</h2>
+      <p>
+        We <strong>do not</strong> sell, rent, or trade your information.
+      </p>
+      <p>
+        We may share your data only in the following limited circumstances:
+      </p>
+      <ul>
+        <li><strong>With internal project developers</strong> for maintenance or debugging</li>
+        <li>
+          <strong>With the Python OCR microservice</strong>, solely for plate recognition
+        </li>
+        <li>
+          <strong>If required by law</strong>, such as in response to lawful requests
+        </li>
+        <li>
+          <strong>In aggregated, non-identifiable form</strong> for academic reporting (optional)
+        </li>
+      </ul>
+      <p>
+        We never share identifiable user information with third parties.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>5. Your Choices and Rights</h2>
+      <p>You may:</p>
+      <ul>
+        <li>Update your email or phone number</li>
+        <li>Change your password</li>
+        <li>Delete your account at any time</li>
+        <li>Remove vehicles you have registered</li>
+      </ul>
+      <p>
+        When you delete your account, all associated stored data (vehicles, profile,
+        records) will be removed.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>6. Data Retention</h2>
+      <p>
+        We retain user and vehicle data only as long as your account exists.
+        OCR images are deleted immediately after processing unless otherwise disclosed.
+      </p>
+      <p>
+        As an academic demo, data may be reset or cleared at any time during development.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>7. Children’s Privacy</h2>
+      <p>
+        The Site is not intended for individuals under the age of 13.
+        We do not knowingly collect personal information from children.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>8. Changes to This Privacy Policy</h2>
+      <p>
+        We may update this Privacy Policy periodically. Continued use of the Site
+        after changes are posted indicates acceptance of the revised policy.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>9. Contact</h2>
+      <p>
+        For questions or concerns about this Privacy Policy, please contact the
+        Parallax development team.
+      </p>
+    </section>
+
+    <section class="section small-note">
+      <p>
+        This Privacy Policy is intended to provide clear information about how
+        your data is handled within the Parallax project.
+      </p>
+    </section>
+  </main>
+</body>
+</html>
