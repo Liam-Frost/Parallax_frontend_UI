@@ -40,6 +40,7 @@ const loginForm = document.getElementById("login-form");
 const loginIdentifierInput = document.getElementById("login-username");
 const loginPasswordInput = document.getElementById("login-password");
 const loginPrimaryButton = loginForm?.querySelector(".primary-button");
+const rememberMeInput = document.getElementById("remember-me");
 const registerForm = document.getElementById("register-form");
 const resetForm = document.getElementById("reset-form");
 const authMessage = document.getElementById("auth-message");
@@ -134,7 +135,7 @@ const vehicleFilters = {
 };
 
 const LICENSE_PATTERN = /^[A-Z0-9-]{1,7}$/;
-const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/;
 const REGION_OPTIONS = [
   { iso: "US", name: "United States", phoneCode: "+1" },
@@ -547,6 +548,17 @@ function setSession(user) {
     );
   } else {
     localStorage.removeItem(STORAGE_KEYS.session);
+  }
+}
+
+function setEphemeralSession(user) {
+  if (user) {
+    sessionStorage.setItem(
+      STORAGE_KEYS.session,
+      JSON.stringify({ username: user.username, isAdmin: !!user.isAdmin })
+    );
+  } else {
+    sessionStorage.removeItem(STORAGE_KEYS.session);
   }
 }
 
@@ -982,11 +994,15 @@ async function handleRegister(event) {
     return;
   }
 
-  if (!password || password.length < 8) {
-    showMessage(authMessage, "Password must be at least 8 characters.", "error");
+  if (!PASSWORD_PATTERN.test(password || "")) {
+    showMessage(
+      authMessage,
+      "Password must be 8–20 characters with upper, lower, and a number.",
+      "error"
+    );
     return;
   }
-
+  
   if (password !== confirmPassword) {
     showMessage(authMessage, "Passwords do not match.", "error");
     return;
@@ -1228,7 +1244,15 @@ async function handleLogin(event) {
     }
 
     currentUser = { ...user, isAdmin };
-    setSession(currentUser);
+    const rememberMe = !!rememberMeInput?.checked;
+    if (rememberMe) {
+      setEphemeralSession(null);
+      setSession(currentUser);
+    } else {
+      setSession(null);
+      setEphemeralSession(currentUser);
+    }
+    
     loginForm.reset();
     setLoginStage("identifier");
     enterLicenseMode();
@@ -1261,11 +1285,15 @@ function enterLicenseMode() {
   welcomeMessage.textContent = `Welcome, ${name}! Please register your vehicles.`;
   showMessage(licenseMessage, "");
   refreshLicenseList();
+  sessionStorage.setItem("ft_activeView", "vehicles");
 }
 
 function exitLicenseMode() {
   currentUser = null;
   setSession(null);
+  setEphemeralSession(null);
+  sessionStorage.removeItem("ft_activeView");
+
   setAdminBodyState(false);
   licenseSection.classList.add("hidden");
   accountSection?.classList.add("hidden");
@@ -1285,7 +1313,7 @@ function populateAccountFields() {
     accountPhoneCountrySelect.value = currentUser.phoneCountry || "";
   }
   if (accountPhoneInput) {
-    accountPhoneInput.value = currentUser.phone || "";
+    accountPhoneInput.value = (currentUser.phone || "").replace(/\D/g, "");
   }
   if (accountCurrentPasswordInput) {
     accountCurrentPasswordInput.value = "";
@@ -1351,6 +1379,8 @@ function enterAccountMode() {
   if (accountDeleteButton) {
     accountDeleteButton.disabled = admin;
   }
+  
+  sessionStorage.setItem("ft_activeView", "account");
 }
 
 function enterQueryMode() {
@@ -1363,8 +1393,9 @@ function enterQueryMode() {
   showMessage(queryImageResult, "");
 
   setNavSignoutVisibility(!!currentUser);
+  
+  sessionStorage.setItem("ft_activeView", "query");
 }
-
 
 async function handleLicenseSubmit(event) {
   event.preventDefault();
@@ -1626,7 +1657,16 @@ function handleAccountContactSubmit(event) {
     showMessage(accountContactMessage, "Enter a valid phone number and country code.", "error");
     return;
   }
-
+  
+  if (!currentPassword) {
+    showMessage(
+      accountContactMessage,
+      "Enter your current password to save changes.",
+      "error"
+    );
+    return;
+  }
+  
   const payload = {
     username: currentUser.username,
     currentPassword,
@@ -1643,33 +1683,30 @@ function handleAccountContactSubmit(event) {
     .then(({ response, data }) => {
       if (!response?.ok || !data?.success) {
         showMessage(
-          accountContactMessage,
-          data?.message || "Unable to update contact details right now.",
-          "error"
+        accountContactMessage,
+        data?.message || "Unable to update contact details right now.",
+        "error"
         );
         return;
       }
-
+    
       const updatedUser = {
         ...currentUser,
         ...data.user,
+        username: lowerEmail,
         password: currentUser.password,
       };
-
-      const users = readUsers();
-      let found = false;
-      const mapped = users.map((user) => {
-        if (user.username === currentUser.username) {
-          found = true;
-          return { ...user, ...data.user };
-        }
-        return user;
-      });
-      if (!found) {
-        mapped.push({ ...data.user });
+    
+      if (updatedUser.phone) {
+        updatedUser.phone = String(updatedUser.phone).replace(/\D/g, "");
       }
+    
+      const users = readUsers();
+      const mapped = users.map((user) =>
+        user.username === currentUser.username ? { ...user, ...updatedUser } : user
+      );
       saveUsers(mapped);
-
+    
       currentUser = { ...updatedUser, isAdmin: currentUser.isAdmin };
       setSession(currentUser);
       populateAccountFields();
@@ -1783,14 +1820,24 @@ function handleAccountDelete() {
     );
     return;
   }
+  
+  const currentPassword =
+    accountCurrentPasswordInput?.value || accountOldPasswordInput?.value || "";
+
+  if (!currentPassword) {
+    showMessage(
+      accountPasswordMessage,
+      "Please enter your current password to delete your account.",
+      "error"
+    );
+    return;
+  }
 
   const confirmation = window.confirm(
     "Deleting your account will remove all data in this browser. This cannot be undone. Continue?"
   );
 
   if (!confirmation) return;
-
-  const currentPassword = accountOldPasswordInput?.value || "";
 
   apiRequest(`/account`, {
     method: "DELETE",
@@ -2272,8 +2319,23 @@ accountDeleteButton?.addEventListener("click", (event) => {
 
 queryForm?.addEventListener("submit", handleQuerySubmit);
 
-document.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("storage", (event) => {
+  if (event.key !== STORAGE_KEYS.session) return;
 
+  const session = getSession();
+  if (!session || !session.username) {
+    currentUser = null;
+    setAdminBodyState(false);
+    licenseSection?.classList.add("hidden");
+    accountSection?.classList.add("hidden");
+    querySection?.classList.add("hidden");
+    authShell?.classList.remove("hidden");
+    setNavSignoutVisibility(false);
+    showLoginView();
+  }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
   if (registerCountrySelect) {
     populateCountrySelect(registerCountrySelect);
   }
@@ -2283,21 +2345,34 @@ document.addEventListener("DOMContentLoaded", () => {
   if (accountPhoneCountrySelect) {
     populatePhoneCodeSelect(accountPhoneCountrySelect);
   }
-  
+
   populateBirthSelects();
   populateVehicleSelects();
   setupCaptchaControls();
   generateCaptcha("register");
   generateCaptcha("reset");
   generateCaptcha("account");
-  showLoginView();
   setNavSignoutVisibility(false);
 
   drawParallaxRingLogo();
   window.addEventListener("resize", drawParallaxRingLogo);
 
-  const session = getSession();
+  let session = getSession();
+
   if (!session || !session.username) {
+    try {
+      const data = JSON.parse(sessionStorage.getItem(STORAGE_KEYS.session));
+      if (data && data.username) {
+        session = { username: data.username, isAdmin: !!data.isAdmin };
+      }
+    } catch (e) {
+      // ignore parse error
+    }
+  }
+
+  if (!session || !session.username) {
+    showLoginView();
+    setNavSignoutVisibility(false);
     return;
   }
 
@@ -2305,16 +2380,32 @@ document.addEventListener("DOMContentLoaded", () => {
   const user = users.find((item) => item.username === session.username);
   if (user) {
     currentUser = { ...user, isAdmin: !!session.isAdmin };
-    enterLicenseMode();
-    return;
+  } else {
+    currentUser = {
+      username: session.username,
+      email: session.username,
+      displayName: session.username,
+      isAdmin: !!session.isAdmin,
+    };
   }
 
-  // Allow restoring admin session even if not persisted locally
-  currentUser = {
-    username: session.username,
-    email: session.username,
-    displayName: session.username,
-    isAdmin: !!session.isAdmin,
-  };
-  enterLicenseMode();
+  function restoreViewAfterReload() {
+    if (!currentUser) {
+      showLoginView();
+      setNavSignoutVisibility(false);
+      return;
+    }
+
+    const activeView = sessionStorage.getItem("ft_activeView") || "vehicles";
+
+    if (activeView === "account") {
+      enterAccountMode();
+    } else if (activeView === "query") {
+      enterQueryMode();
+    } else {
+      enterLicenseMode();
+    }
+  }
+
+  restoreViewAfterReload();
 });
